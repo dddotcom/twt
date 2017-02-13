@@ -1,10 +1,6 @@
 var gameProperties = {
   screenWidth: 800,
   screenHeight: 600,
-  playerOneSpriteName: 'player1',
-  playerOneSpriteURL: 'assets/player1.png',
-  playerTwoSpriteName: 'player2',
-  playerTwoSpriteURL: 'assets/player22.png',
   playerSpriteHeight: 100,
   playerSpriteWidth: 67,
   playerSpeed: 300,
@@ -15,12 +11,32 @@ var gameProperties = {
   bathroomBgURL: 'assets/bathroom1.png',
 }
 
-var playerTwo = {
-  upCommand: Phaser.Keyboard.W,
-  downCommand: Phaser.Keyboard.S,
-  leftCommand: Phaser.Keyboard.D,
-  rightCommand: Phaser.Keyboard.A
-}
+var players = [
+  {
+    spriteName: 'player0',
+    spriteURL: 'assets/player1.png',
+    upCommand: Phaser.Keyboard.I,
+    downCommand: Phaser.Keyboard.K,
+    leftCommand: Phaser.Keyboard.J,
+    rightCommand: Phaser.Keyboard.L,
+    commandListeners: [],
+    actionListeners: [],
+    lastDirection: '',
+  },
+  {
+    spriteName: 'player1',
+    spriteURL: 'assets/player22.png',
+    upCommand: Phaser.Keyboard.W,
+    downCommand: Phaser.Keyboard.S,
+    // leftCommand: Phaser.Keyboard.D,
+    leftCommand: Phaser.Keyboard.A,
+    // rightCommand: Phaser.Keyboard.A,
+    rightCommand: Phaser.Keyboard.D,
+    commandListeners: [],
+    actionListeners: [],
+    lastDirection:'',
+  }
+]
 
 var fontAssets = {
   actionFontStyle: {font: '32px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
@@ -29,7 +45,7 @@ var fontAssets = {
 }
 
 var actionText;
-var player1, player2;
+var playersGroup;
 var lastDirection, lastDirectionP2;
 var sinks, showers;
 var oldLevel;
@@ -48,10 +64,8 @@ var levelToEnabledActions = {
 var actions = [
   {
     action: "BRUSH TEETH",
-    command: Phaser.Keyboard.P,
-    commandP2: Phaser.Keyboard.Q,
-    commandKey: "[P]",
-    commandKeyP2: "[Q]",
+    command: [Phaser.Keyboard.N, Phaser.Keyboard.Z],
+    commandKey: ["[P]", "[Q]"],
     imageName: 'sink',
     imageURL: 'assets/sink1.png',
     group: sinks,
@@ -60,10 +74,8 @@ var actions = [
   },
   {
     action: "GET NAKED",
-    command: Phaser.Keyboard.M,
-    commandP2: Phaser.Keyboard.E,
-    commandKey: "[M]",
-    commandKeyP2: "[E]",
+    command: [Phaser.Keyboard.M, Phaser.Keyboard.X],
+    commandKey: ["[M]", "[E]"],
     imageName: 'shower',
     imageURL: 'assets/shower1.png',
     group: showers,
@@ -73,14 +85,14 @@ var actions = [
 ]
 
 var mainState = function(game) {
-  this.brushTeeth;
-  this.getNaked;
-  this.playerTwo_brushTeeth;
-  this.playerTwo_getNaked;
-  this.playerTwo_up;
-  this.playerTwo_down;
-  this.playerTwo_left;
-  this.playerTwo_right;
+  // this.brushTeeth;
+  // this.getNaked;
+  // this.playerTwo_brushTeeth;
+  // this.playerTwo_getNaked;
+  // this.playerTwo_up;
+  // this.playerTwo_down;
+  // this.playerTwo_left;
+  // this.playerTwo_right;
 }
 
 mainState.prototype = {
@@ -91,12 +103,16 @@ mainState.prototype = {
     currentLevel = 0;
     oldLevel = 0;
 
+    //load items
     for(var i = 0; i < actions.length; i++){
       game.load.image(actions[i].imageName, actions[i].imageURL);
     }
 
-    game.load.spritesheet(gameProperties.playerOneSpriteName, gameProperties.playerOneSpriteURL, gameProperties.playerSpriteWidth, gameProperties.playerSpriteHeight);
-    game.load.spritesheet(gameProperties.playerTwoSpriteName, gameProperties.playerTwoSpriteURL, gameProperties.playerSpriteWidth, gameProperties.playerSpriteHeight);
+    //load players
+    for(var i = 0; i < players.length; i++){
+      game.load.spritesheet(players[i].spriteName, players[i].spriteURL, gameProperties.playerSpriteWidth, gameProperties.playerSpriteHeight);
+    }
+
   },
 
   create: function() {
@@ -105,6 +121,7 @@ mainState.prototype = {
     this.initText();
     this.initGraphics();
     this.initPlayers();
+
     this.initKeyboard();
 
     this.initButtons();
@@ -112,12 +129,11 @@ mainState.prototype = {
 
   update: function() {
     this.updateLevel();
-    this.movePlayerOne();
-    this.movePlayerTwo();
-    game.physics.arcade.overlap(player1, actions[0].group, this.collideWithItem, null, this);
-    game.physics.arcade.overlap(player1, actions[1].group, this.collideWithItem, null, this);
-    game.physics.arcade.overlap(player2, actions[0].group, this.collideWithItem, null, this);
-    game.physics.arcade.overlap(player2, actions[1].group, this.collideWithItem, null, this);
+    this.movePlayers();
+    // game.physics.arcade.overlap(player1, actions[0].group, this.collideWithItem, null, this);
+    // game.physics.arcade.overlap(player1, actions[1].group, this.collideWithItem, null, this);
+    // game.physics.arcade.overlap(player2, actions[0].group, this.collideWithItem, null, this);
+    // game.physics.arcade.overlap(player2, actions[1].group, this.collideWithItem, null, this);
   },
 
   collideWithItem: function(player, item) {
@@ -146,91 +162,65 @@ mainState.prototype = {
       }
   },
 
-  movePlayerOne: function() {
-    player1.body.velocity.x = 0;
-    if(cursors.left.isDown){
-      player1.body.velocity.x = -gameProperties.playerSpeed;
-      player1.animations.play('left');
-      lastDirection = 'left';
-    } else if(cursors.right.isDown){
-      player1.body.velocity.x = gameProperties.playerSpeed;
-      player1.animations.play('right');
-      lastDirection = 'right';
-    } else if(cursors.down.isDown){
-      player1.body.velocity.y = gameProperties.playerSpeed;
-      this.moveUpAndDownP1();
-    } else if(cursors.up.isDown){
-      player1.body.velocity.y = -gameProperties.playerSpeed;
-      this.moveUpAndDownP1();
-    } else if(this.brushTeeth.isDown){
-      player1.animations.play('brushTeeth');
-    } else if(this.getNaked.isDown){
-      player1.animations.play('shower');
-    } else {
-      player1.animations.stop();
-      player1.body.velocity.y = 0;
-      player1.frame = 2;
+  movePlayers: function() {
+    for(var i = 0; i < playersGroup.children.length; i++){
+      playersGroup.children[i].body.velocity.x = 0;
+      if(players[i].commandListeners[2].isDown){
+        playersGroup.children[i].body.velocity.x = -gameProperties.playerSpeed;
+        playersGroup.children[i].animations.play('left');
+        lastDirection = 'left';
+      } else if(players[i].commandListeners[3].isDown){
+        playersGroup.children[i].body.velocity.x = gameProperties.playerSpeed;
+        playersGroup.children[i].animations.play('right');
+        lastDirection = 'right';
+      } else if(players[i].commandListeners[1].isDown){
+        playersGroup.children[i].body.velocity.y = gameProperties.playerSpeed;
+        this.moveUpAndDown(playersGroup.children[i]);
+      } else if(players[i].commandListeners[0].isDown){
+        playersGroup.children[i].body.velocity.y = -gameProperties.playerSpeed;
+        this.moveUpAndDown(playersGroup.children[i]);
+      }
+      // else if(this.brushTeeth.isDown){
+      //   player1.animations.play('brushTeeth');
+      // } else if(this.getNaked.isDown){
+      //   player1.animations.play('shower');
+      // }
+      else {
+        playersGroup.children[i].animations.stop();
+        playersGroup.children[i].body.velocity.y = 0;
+        playersGroup.children[i].frame = 2;
+      }
     }
   },
 
-  movePlayerTwo: function() {
-    player2.body.velocity.x = 0;
-    if(this.playerTwo_left.isDown){
-      player2.body.velocity.x = gameProperties.playerSpeed;
-      player2.animations.play('left');
-      lastDirectionP2 = 'left';
-    } else if(this.playerTwo_right.isDown){
-      player2.body.velocity.x = -gameProperties.playerSpeed;
-      player2.animations.play('right');
-      lastDirectionP2 = 'right';
-    } else if(this.playerTwo_up.isDown){
-      player2.body.velocity.y = -gameProperties.playerSpeed;
-      this.moveUpAndDownP2();
-    } else if(this.playerTwo_down.isDown){
-      player2.body.velocity.y = gameProperties.playerSpeed;
-      this.moveUpAndDownP2();
-    } else if(this.playerTwo_brushTeeth.isDown){
-      player2.animations.play('brushTeeth');
-    } else if(this.playerTwo_getNaked.isDown){
-      player2.animations.play('shower');
-    } else {
-      player2.animations.stop();
-      player2.body.velocity.y = 0;
-      player2.frame = 2;
-    }
-  },
-
-  moveUpAndDownP1: function(){
-  	if(lastDirection == 'left'){
-  			player1.animations.play('left');
+  moveUpAndDown: function(player){
+    var index = playersGroup.children.indexOf(player);
+  	if(players[index].lastDirection === 'left'){
+  			player.animations.play('left');
   	} else {
-  		player1.animations.play('right');
-  	}
-  },
-
-  moveUpAndDownP2: function(){
-  	if(lastDirectionP2 == 'left'){
-  			player2.animations.play('left');
-  	} else {
-  		player2.animations.play('right');
+  		player.animations.play('right');
   	}
   },
 
   initPlayers: function() {
-    player1 = game.add.sprite(Math.random() * gameProperties.itemMaxWidth,  Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight, gameProperties.playerOneSpriteName);
-    game.physics.arcade.enable(player1);
-    player1.body.collideWorldBounds = true;
+    playersGroup = game.add.group();
+    playersGroup.enableBody = true;
 
-    player1.animations.add('left', [0, 1], 5, true);
-    player1.animations.add('right', [3, 4], 5, true);
+    //create players
+    for(var i = 0; i < players.length; i++){
+      var player = game.add.sprite(
+        32,
+        Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
+        players[i].spriteName);
 
-    player2 = game.add.sprite(32,  Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight, gameProperties.playerTwoSpriteName);
-    game.physics.arcade.enable(player2);
-    player2.body.collideWorldBounds = true;
+      game.physics.arcade.enable(player);
+      player.body.collideWorldBounds = true;
+      player.animations.add('left', [0, 1], 5, true);
+      player.animations.add('right', [3, 4], 5, true);
 
-    player2.animations.add('left', [0, 1], 5, true);
-    player2.animations.add('right', [3, 4], 5, true);
 
+      playersGroup.add(player);
+    }
     this.enableRelevantAnimations();
   },
 
@@ -238,8 +228,9 @@ mainState.prototype = {
     var enabledActions = levelToEnabledActions[currentLevel];
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
-      player1.animations.add(actions[index].animationName, actions[index].animationFrames, 5, true);
-      player2.animations.add(actions[index].animationName, actions[index].animationFrames, 5, true);
+      playersGroup.forEach(function(player) {
+        player.animations.add(actions[index].animationName, actions[index].animationFrames, 5, true);
+      }, this);
     }
   },
 
@@ -251,22 +242,26 @@ mainState.prototype = {
   },
 
   initKeyboard: function() {
-    cursors = game.input.keyboard.createCursorKeys();
+    // cursors = game.input.keyboard.createCursorKeys();
+    for(var i = 0; i < players.length; i++){
+      players[i].commandListeners.push(game.input.keyboard.addKey(players[i].upCommand));
+      players[i].commandListeners.push(game.input.keyboard.addKey(players[i].downCommand));
+      players[i].commandListeners.push(game.input.keyboard.addKey(players[i].leftCommand));
+      players[i].commandListeners.push(game.input.keyboard.addKey(players[i].rightCommand));
+    }
 
-    this.brushTeeth = game.input.keyboard.addKey(actions[0].command);
-    this.getNaked = game.input.keyboard.addKey(actions[1].command);
+    for(var i = 0; i < actions.length; i++){
+      for(var y = 0; y < actions[i].command.length; y++){
+        players[i].actionListeners.push(game.input.keyboard.addKey(actions[i].command[y]));
+      }
+    }
 
-    //playerTwo
-    this.playerTwo_up = game.input.keyboard.addKey(playerTwo.upCommand);
-    this.playerTwo_down = game.input.keyboard.addKey(playerTwo.downCommand);
-    this.playerTwo_left = game.input.keyboard.addKey(playerTwo.leftCommand);
-    this.playerTwo_right = game.input.keyboard.addKey(playerTwo.rightCommand);
-    this.playerTwo_brushTeeth = game.input.keyboard.addKey(actions[0].commandP2);
-    this.playerTwo_getNaked = game.input.keyboard.addKey(actions[1].commandP2);
+    // this.brushTeeth = game.input.keyboard.addKey(actions[0].command);
+    // this.getNaked = game.input.keyboard.addKey(actions[1].command);
 
-    this.initActionListeners();
+    //this.initActionListeners();
     //only enable those that are relevant to the level
-    this.enableRelevantActions();
+    // this.enableRelevantActions();
   },
 
   enableRelevantActions: function() {
