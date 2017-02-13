@@ -10,6 +10,7 @@ var gameProperties = {
   itemMaxWidth: 800,
   bathroomBgName: 'bathroom',
   bathroomBgURL: 'assets/bathroom1.png',
+  actionTimer: 500,
 }
 
 var players = [
@@ -141,8 +142,8 @@ mainState.prototype = {
     var actionIndex = items.indexOf(item.key);
     var actionPoints = actions[actionIndex].points;
     var playersIndex = player.key.split("player")[1];
-
-    if(players[playersIndex].actionListeners[actionIndex].isDown){
+    var actionKey = players[playersIndex].actionListeners[actionIndex];
+    if(actionKey.isDown && actionKey.duration == gameProperties.actionTimer){
       item.kill();
       players[playersIndex].score += actionPoints;
       this.showPoints(player, actionPoints);
@@ -233,6 +234,7 @@ mainState.prototype = {
         players[i].actionListeners.push(game.input.keyboard.addKey(actions[y].command[i]));
       }
     }
+
 
     //only enable those that are relevant to the level
     this.enableRelevantActions();
