@@ -65,7 +65,7 @@ var actions = [
   {
     action: "BRUSH TEETH",
     command: [Phaser.Keyboard.N, Phaser.Keyboard.Z],
-    commandKey: ["[P]", "[Q]"],
+    commandKey: ["[N]", "[Z]"],
     imageName: 'sink',
     imageURL: 'assets/sink1.png',
     group: sinks,
@@ -75,7 +75,7 @@ var actions = [
   {
     action: "GET NAKED",
     command: [Phaser.Keyboard.M, Phaser.Keyboard.X],
-    commandKey: ["[M]", "[E]"],
+    commandKey: ["[M]", "[X]"],
     imageName: 'shower',
     imageURL: 'assets/shower1.png',
     group: showers,
@@ -89,10 +89,6 @@ var mainState = function(game) {
   // this.getNaked;
   // this.playerTwo_brushTeeth;
   // this.playerTwo_getNaked;
-  // this.playerTwo_up;
-  // this.playerTwo_down;
-  // this.playerTwo_left;
-  // this.playerTwo_right;
 }
 
 mainState.prototype = {
@@ -100,8 +96,8 @@ mainState.prototype = {
   preload: function() {
     game.load.image(gameProperties.bathroomBgName, gameProperties.bathroomBgURL);
 
-    currentLevel = 0;
-    oldLevel = 0;
+    currentLevel = 2;
+    oldLevel = 2;
 
     //load items
     for(var i = 0; i < actions.length; i++){
@@ -180,11 +176,11 @@ mainState.prototype = {
         playersGroup.children[i].body.velocity.y = -gameProperties.playerSpeed;
         this.moveUpAndDown(playersGroup.children[i]);
       }
-      // else if(this.brushTeeth.isDown){
-      //   player1.animations.play('brushTeeth');
-      // } else if(this.getNaked.isDown){
-      //   player1.animations.play('shower');
-      // }
+      else if(players[i].actionListeners[0].isDown){
+        playersGroup.children[i].animations.play('brushTeeth');
+      } else if(players[i].actionListeners[1].isDown){
+        playersGroup.children[i].animations.play('shower');
+      }
       else {
         playersGroup.children[i].animations.stop();
         playersGroup.children[i].body.velocity.y = 0;
@@ -234,15 +230,14 @@ mainState.prototype = {
     }
   },
 
-  initActionListeners: function() {
-    actionListeners = [
-      {player1: this.brushTeeth, player2: this.playerTwo_brushTeeth},
-      {player1: this.getNaked, player2: this.playerTwo_getNaked},
-    ];
-  },
+  // initActionListeners: function() {
+  //   actionListeners = [
+  //     {player1: this.brushTeeth, player2: this.playerTwo_brushTeeth},
+  //     {player1: this.getNaked, player2: this.playerTwo_getNaked},
+  //   ];
+  // },
 
   initKeyboard: function() {
-    // cursors = game.input.keyboard.createCursorKeys();
     for(var i = 0; i < players.length; i++){
       players[i].commandListeners.push(game.input.keyboard.addKey(players[i].upCommand));
       players[i].commandListeners.push(game.input.keyboard.addKey(players[i].downCommand));
@@ -250,16 +245,12 @@ mainState.prototype = {
       players[i].commandListeners.push(game.input.keyboard.addKey(players[i].rightCommand));
     }
 
-    for(var i = 0; i < actions.length; i++){
-      for(var y = 0; y < actions[i].command.length; y++){
-        players[i].actionListeners.push(game.input.keyboard.addKey(actions[i].command[y]));
+    for(var i = 0; i < players.length; i++){
+      for(var y = 0; y < actions.length; y++){
+        players[i].actionListeners.push(game.input.keyboard.addKey(actions[y].command[i]));
       }
     }
 
-    // this.brushTeeth = game.input.keyboard.addKey(actions[0].command);
-    // this.getNaked = game.input.keyboard.addKey(actions[1].command);
-
-    //this.initActionListeners();
     //only enable those that are relevant to the level
     // this.enableRelevantActions();
   },
