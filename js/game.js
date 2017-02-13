@@ -23,6 +23,7 @@ var players = [
     commandListeners: [],
     actionListeners: [],
     lastDirection: '',
+    score: 0,
   },
   {
     spriteName: 'player1',
@@ -34,6 +35,7 @@ var players = [
     commandListeners: [],
     actionListeners: [],
     lastDirection:'',
+    score: 0,
   }
 ]
 
@@ -41,9 +43,14 @@ var fontAssets = {
   actionFontStyle: {font: '32px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
   actionTextWidth: 16,
   actionTextHeight: gameProperties.screenHeight - 50,
+  scoreTextWidthLeft: gameProperties.screenWidth * 0.02,
+  scoreTextWidthRight: gameProperties.screenWidth * 0.82,
+  scoreTextHeight: gameProperties.screenHeight * 0.02,
+  scoreFontStyle: {font: '20px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  pointsFontStyle: {font: '30px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
 }
 
-var actionText;
+var actionText, playerZeroText, playerOneText;
 var playersGroup;
 var sinks, showers;
 var oldLevel;
@@ -68,6 +75,7 @@ var actions = [
     group: sinks,
     animationName: 'brushTeeth',
     animationFrames: [5,6],
+    points: 800,
   },
   {
     action: "GET NAKED",
@@ -78,6 +86,7 @@ var actions = [
     group: showers,
     animationName: 'shower',
     animationFrames: [7,8],
+    points: 400,
   }
 ]
 
@@ -124,16 +133,29 @@ mainState.prototype = {
         game.physics.arcade.overlap(playersGroup.children[y], actions[i].group, this.collideWithItem, null, this);
       }
     }
+    this.updateScore();
   },
 
   collideWithItem: function(player, item) {
-    var values = actions.map(function(o) { return o.imageName; });
-    var actionIndex = values.indexOf(item.key);
+    var items = actions.map(function(o) { return o.imageName; });
+    var actionIndex = items.indexOf(item.key);
+    var actionPoints = actions[actionIndex].points;
     var playersIndex = player.key.split("player")[1];
 
     if(players[playersIndex].actionListeners[actionIndex].isDown){
       item.kill();
+      players[playersIndex].score += actionPoints;
+      this.showPoints(player, actionPoints);
     }
+
+  },
+
+  showPoints: function(player, actionPoints) {
+    var width = player.position.x;
+    var height = player.position.y -20;
+    var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle);
+   game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);
+   game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
   },
 
   movePlayers: function() {
@@ -252,6 +274,14 @@ mainState.prototype = {
   initText: function() {
     actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
     $("#level").text("Level: " + currentLevel);
+
+    playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 0", fontAssets.scoreFontStyle);
+    playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 0", fontAssets.scoreFontStyle);
+  },
+
+  updateScore: function() {
+    playerZeroText.text = "Player 1: " + players[0].score;
+    playerOneText.text = "Player 2: " + players[1].score;
   },
 
   initBackground: function() {
