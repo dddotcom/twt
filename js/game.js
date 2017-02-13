@@ -232,7 +232,6 @@ mainState.prototype = {
     for(var i = 0; i < players.length; i++){
       for(var y = 0; y < actions.length; y++){
         players[i].actionListeners.push(game.input.keyboard.addKey(actions[y].command[i]));
-        game.input.keyboard.addKeyCapture(actions[y].command[i]);
       }
     }
 
