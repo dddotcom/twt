@@ -66,13 +66,13 @@ var levels = [
     enabledActions: [0],
   },
   {
-    levelName: 'road',
+    levelName: 'bathroom2',
     levelURL: 'assets/bathroom1.png',
     enabledActions: [1],
   },
   {
-    levelName: 'outsideSchool',
-    levelURL: 'assets/bathroom1.png',
+    levelName: 'road',
+    levelURL: 'assets/road.png',
     enabledActions: [0,1],
   }
 ];
@@ -329,13 +329,18 @@ mainState.prototype = {
 
       //create group items
       for(var y = 0; y < 3; y++){
-        var item = actions[index].group.create(
-          Math.random() * gameProperties.itemMaxWidth,
-          Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
-          actions[index].imageName);
-        item.body.collideWorldBounds = true;
-        itemsInPlay++;
-        totalItemsGenerated++;
+        var item = actions[index].group.getFirstExists(false);
+        if(item){
+          item.revive();
+        } else {
+            item = actions[index].group.create(
+            Math.random() * gameProperties.itemMaxWidth,
+            Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
+            actions[index].imageName);
+            item.body.collideWorldBounds = true;
+            itemsInPlay++;
+            totalItemsGenerated++;
+        }
       }
 
       var text = actions[index].commandKey + " NEW ACTION: " + actions[index].action + "!";
@@ -390,13 +395,17 @@ mainState.prototype = {
       this.calculateLevelTime();
       this.startLevelTimer();
       //bring players to top
+      for(var actionIndex = 0; actionIndex < actions.length; actionIndex++){
+        game.world.bringToTop(actions[actionIndex].group);
+      }
       game.world.bringToTop(textGroup);
       game.world.bringToTop(playersGroup);
     }
   },
 
   render: function() {
-    game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
+    + "\nItems Generated: " + totalItemsGenerated, 32, 32);
   },
 
 };
