@@ -145,6 +145,7 @@ mainState.prototype = {
     this.initPlayers();
 
     this.initKeyboard();
+    this.startLevelTimer();
 
     this.initButtons();
   },
@@ -338,14 +339,18 @@ mainState.prototype = {
       }
 
       var text = actions[index].commandKey + " NEW ACTION: " + actions[index].action + "!";
-      console.log(text);
       actionText.text = text;
+    }
+  },
+
+  goToNextLevel: function(){
+    if(gameProperties.currentLevel <= levels.length-2){
+      gameProperties.currentLevel++;
     }
   },
 
   initButtons: function() {
     $("#level0").click(function() {
-      console.log("level0 clicked");
       gameProperties.currentLevel = 0;
     });
     $("#level1").click(function() {
@@ -358,7 +363,10 @@ mainState.prototype = {
 
   calculateLevelTime: function() {
     levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimer);
-    console.log("Level " + gameProperties.currentLevel + ": " + levelTime + "ms left");
+  },
+
+  startLevelTimer: function() {
+    game.time.events.add(levelTime, this.goToNextLevel, this);
   },
 
   updateBackground: function() {
@@ -380,11 +388,16 @@ mainState.prototype = {
       this.enableRelevantAnimations();
       this.enableRelevantActions();
       this.calculateLevelTime();
+      this.startLevelTimer();
       //bring players to top
       game.world.bringToTop(textGroup);
       game.world.bringToTop(playersGroup);
     }
-  }
+  },
+
+  render: function() {
+    game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+  },
 
 };
 
