@@ -4,6 +4,7 @@ var gameProperties = {
   playerSpriteHeight: 100,
   playerSpriteWidth: 67,
   playerSpeed: 300,
+  playerStartWidth: 32,
   itemMinHeight: 191,
   itemMaxHeight:200,
   itemMaxWidth: 800,
@@ -28,9 +29,7 @@ var players = [
     spriteURL: 'assets/player22.png',
     upCommand: Phaser.Keyboard.W,
     downCommand: Phaser.Keyboard.S,
-    // leftCommand: Phaser.Keyboard.D,
     leftCommand: Phaser.Keyboard.A,
-    // rightCommand: Phaser.Keyboard.A,
     rightCommand: Phaser.Keyboard.D,
     commandListeners: [],
     actionListeners: [],
@@ -46,14 +45,12 @@ var fontAssets = {
 
 var actionText;
 var playersGroup;
-var lastDirection, lastDirectionP2;
 var sinks, showers;
 var oldLevel;
 var currentLevel;
 var levelTimer = 10000;
 var cursors;
 var actionListeners;
-// var brushTeeth, getNaked;
 
 var levelToEnabledActions = {
   0: [0],
@@ -85,10 +82,6 @@ var actions = [
 ]
 
 var mainState = function(game) {
-  // this.brushTeeth;
-  // this.getNaked;
-  // this.playerTwo_brushTeeth;
-  // this.playerTwo_getNaked;
 }
 
 mainState.prototype = {
@@ -96,8 +89,8 @@ mainState.prototype = {
   preload: function() {
     game.load.image(gameProperties.bathroomBgName, gameProperties.bathroomBgURL);
 
-    currentLevel = 2;
-    oldLevel = 2;
+    currentLevel = 0;
+    oldLevel = 0;
 
     //load items
     for(var i = 0; i < actions.length; i++){
@@ -126,36 +119,21 @@ mainState.prototype = {
   update: function() {
     this.updateLevel();
     this.movePlayers();
-    // game.physics.arcade.overlap(player1, actions[0].group, this.collideWithItem, null, this);
-    // game.physics.arcade.overlap(player1, actions[1].group, this.collideWithItem, null, this);
-    // game.physics.arcade.overlap(player2, actions[0].group, this.collideWithItem, null, this);
-    // game.physics.arcade.overlap(player2, actions[1].group, this.collideWithItem, null, this);
+    for(var i = 0; i < actions.length; i++){
+      for(var y = 0; y < playersGroup.children.length; y++){
+        game.physics.arcade.overlap(playersGroup.children[y], actions[i].group, this.collideWithItem, null, this);
+      }
+    }
   },
 
   collideWithItem: function(player, item) {
-    // console.log(player);
-    if(item.key === actions[0].imageName){
-      if(player.key === 'player1'){
-        if(actionListeners[0].player1.isDown){
-          item.kill();
-        }
-      } else if(player.key === 'player2'){
-        if(actionListeners[0].player2.isDown){
-          item.kill();
-        }
-      }
+    var values = actions.map(function(o) { return o.imageName; });
+    var actionIndex = values.indexOf(item.key);
+    var playersIndex = player.key.split("player")[1];
 
-    } else if (item.key === actions[1].imageName){
-        if(player.key === 'player1'){
-          if(actionListeners[1].player1.isDown){
-            item.kill();
-          }
-        } else if(player.key === 'player2'){
-            if(actionListeners[1].player2.isDown){
-            item.kill();
-            }
-          }
-      }
+    if(players[playersIndex].actionListeners[actionIndex].isDown){
+      item.kill();
+    }
   },
 
   movePlayers: function() {
@@ -205,7 +183,7 @@ mainState.prototype = {
     //create players
     for(var i = 0; i < players.length; i++){
       var player = game.add.sprite(
-        32,
+        gameProperties.playerStartWidth,
         Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
         players[i].spriteName);
 
@@ -219,23 +197,6 @@ mainState.prototype = {
     }
     this.enableRelevantAnimations();
   },
-
-  enableRelevantAnimations: function() {
-    var enabledActions = levelToEnabledActions[currentLevel];
-    for(var i = 0; i < enabledActions.length; i++){
-      var index = enabledActions[i];
-      playersGroup.forEach(function(player) {
-        player.animations.add(actions[index].animationName, actions[index].animationFrames, 5, true);
-      }, this);
-    }
-  },
-
-  // initActionListeners: function() {
-  //   actionListeners = [
-  //     {player1: this.brushTeeth, player2: this.playerTwo_brushTeeth},
-  //     {player1: this.getNaked, player2: this.playerTwo_getNaked},
-  //   ];
-  // },
 
   initKeyboard: function() {
     for(var i = 0; i < players.length; i++){
@@ -252,7 +213,17 @@ mainState.prototype = {
     }
 
     //only enable those that are relevant to the level
-    // this.enableRelevantActions();
+    this.enableRelevantActions();
+  },
+
+  enableRelevantAnimations: function() {
+    var enabledActions = levelToEnabledActions[currentLevel];
+    for(var i = 0; i < enabledActions.length; i++){
+      var index = enabledActions[i];
+      playersGroup.forEach(function(player) {
+        player.animations.add(actions[index].animationName, actions[index].animationFrames, 5, true);
+      }, this);
+    }
   },
 
   enableRelevantActions: function() {
@@ -260,15 +231,17 @@ mainState.prototype = {
     var enabledActions = levelToEnabledActions[currentLevel];
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
-      actionListeners[index].player1.enabled = true;
-      actionListeners[index].player2.enabled = true;
+      for(var y = 0; y < players.length; y++){
+        players[y].actionListeners[index].enabled = true;
+      }
     }
   },
 
   disableAllActions: function(){
-    for(var i = 0; i < actionListeners.length; i++){
-      actionListeners[i].enabled = false;
-      console.log(actions[i].commandKey + " enabled = " + actionListeners[i].enabled);
+    for(var i = 0; i < actions.length; i++){
+      for(var y = 0; y < players.length; y++){
+        players[y].actionListeners[i].enabled = false;
+      }
     }
   },
 
@@ -294,7 +267,10 @@ mainState.prototype = {
 
       //create group items
       for(var y = 0; y < 3; y++){
-        var item = actions[index].group.create( Math.random() * gameProperties.itemMaxWidth,  Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight, actions[index].imageName);
+        var item = actions[index].group.create(
+          Math.random() * gameProperties.itemMaxWidth,
+          Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
+          actions[index].imageName);
         item.body.collideWorldBounds = true;
       }
 
