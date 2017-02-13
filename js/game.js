@@ -8,8 +8,6 @@ var gameProperties = {
   itemMinHeight: 191,
   itemMaxHeight:200,
   itemMaxWidth: 800,
-  bathroomBgName: 'bathroom',
-  bathroomBgURL: 'assets/bathroom1.png',
   actionTimer: 500,
   levelbaseTime: 10000,
   oldLevel: 0,
@@ -55,7 +53,7 @@ var fontAssets = {
 };
 
 var actionText, playerZeroText, playerOneText;
-var playersGroup;
+var playersGroup, textGroup;
 var sinks, showers;
 var cursors;
 var actionListeners;
@@ -63,9 +61,9 @@ var itemsInPlay, totalItemsGenerated;
 
 var levels = [
   {
-      levelName: 'bathroom',
-      levelURL: 'assets/bathroom1.png',
-      enabledActions: [0],
+    levelName: 'bathroom',
+    levelURL: 'assets/bathroom1.png',
+    enabledActions: [0],
   },
   {
     levelName: 'road',
@@ -109,24 +107,33 @@ var mainState = function(game) {
 
 mainState.prototype = {
 
-  preload: function() {
-    game.load.image(gameProperties.bathroomBgName, gameProperties.bathroomBgURL);
+  loadAssets: function() {
+    //backgrounds
+    for(var i = 0; i < levels.length; i++){
+        game.load.image(levels[i].levelName, levels[i].levelURL);
+    }
+    //items
+    for(var i = 0; i < actions.length; i++){
+      game.load.image(actions[i].imageName, actions[i].imageURL);
+    }
 
+    // player sprites
+    for(var i = 0; i < players.length; i++){
+      game.load.spritesheet(
+        players[i].spriteName, players[i].spriteURL,
+        gameProperties.playerSpriteWidth,
+        gameProperties.playerSpriteHeight
+      );
+    }
+  },
+
+  preload: function() {
     gameProperties.currentLevel = 0;
     gameProperties.oldLevel = 0;
     itemsInPlay = 0;
     totalItemsGenerated = 0;
 
-    //load items
-    for(var i = 0; i < actions.length; i++){
-      game.load.image(actions[i].imageName, actions[i].imageURL);
-    }
-
-    //load players
-    for(var i = 0; i < players.length; i++){
-      game.load.spritesheet(players[i].spriteName, players[i].spriteURL, gameProperties.playerSpriteWidth, gameProperties.playerSpriteHeight);
-    }
-
+    this.loadAssets();
   },
 
   create: function() {
@@ -172,8 +179,8 @@ mainState.prototype = {
     var width = player.position.x;
     var height = player.position.y -20;
     var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle);
-   game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);
-   game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
+    game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);
+    game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
   },
 
   movePlayers: function() {
@@ -227,13 +234,12 @@ mainState.prototype = {
         Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
         players[i].spriteName);
 
-      game.physics.arcade.enable(player);
-      player.body.collideWorldBounds = true;
-      player.animations.add('left', [0, 1], 5, true);
-      player.animations.add('right', [3, 4], 5, true);
+        game.physics.arcade.enable(player);
+        player.body.collideWorldBounds = true;
+        player.animations.add('left', [0, 1], 5, true);
+        player.animations.add('right', [3, 4], 5, true);
 
-
-      playersGroup.add(player);
+        playersGroup.add(player);
     }
     this.enableRelevantAnimations();
   },
@@ -296,6 +302,11 @@ mainState.prototype = {
 
     playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 0", fontAssets.scoreFontStyle);
     playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 0", fontAssets.scoreFontStyle);
+
+    textGroup = game.add.group();
+    textGroup.add(actionText);
+    textGroup.add(playerZeroText);
+    textGroup.add(playerOneText);
   },
 
   updateScore: function() {
@@ -304,7 +315,7 @@ mainState.prototype = {
   },
 
   initBackground: function() {
-    game.add.sprite(0,0, gameProperties.bathroomBgName);
+    gameProperties.currentBackground = game.add.sprite(0,0, levels[gameProperties.currentLevel].levelName);
   },
 
   initGraphics: function() {
@@ -350,15 +361,28 @@ mainState.prototype = {
     console.log("Level " + gameProperties.currentLevel + ": " + levelTime + "ms left");
   },
 
+  updateBackground: function() {
+    game.add.tween(gameProperties.currentBackground).to({x: -gameProperties.screenWidth}, 800, Phaser.Easing.Linear.None, true);
+
+    var newBackground = game.add.sprite(0,0, levels[gameProperties.currentLevel].levelName);
+    newBackground.alpha = 1;
+    game.add.tween(newBackground).from({x: gameProperties.screenWidth}, 800, Phaser.Easing.Linear.None, true);
+
+    gameProperties.currentBackground = newBackground;
+  },
+
   updateLevel: function() {
     if(gameProperties.oldLevel !== gameProperties.currentLevel){
       gameProperties.oldLevel = gameProperties.currentLevel;
-
+      this.updateBackground();
       $("#level").text("Level: " + gameProperties.currentLevel);
       this.initGraphics();
       this.enableRelevantAnimations();
       this.enableRelevantActions();
       this.calculateLevelTime();
+      //bring players to top
+      game.world.bringToTop(textGroup);
+      game.world.bringToTop(playersGroup);
     }
   }
 
