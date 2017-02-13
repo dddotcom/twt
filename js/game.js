@@ -47,6 +47,7 @@ var fontAssets = {
   scoreTextWidthRight: gameProperties.screenWidth * 0.82,
   scoreTextHeight: gameProperties.screenHeight * 0.02,
   scoreFontStyle: {font: '20px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  pointsFontStyle: {font: '30px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
 }
 
 var actionText, playerZeroText, playerOneText;
@@ -144,8 +145,17 @@ mainState.prototype = {
     if(players[playersIndex].actionListeners[actionIndex].isDown){
       item.kill();
       players[playersIndex].score += actionPoints;
+      this.showPoints(player, actionPoints);
     }
 
+  },
+
+  showPoints: function(player, actionPoints) {
+    var width = player.position.x;
+    var height = player.position.y -20;
+    var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle);
+   game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);
+   game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
   },
 
   movePlayers: function() {
