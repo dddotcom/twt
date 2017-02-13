@@ -8,10 +8,11 @@ var gameProperties = {
   itemMinHeight: 191,
   itemMaxHeight:200,
   itemMaxWidth: 800,
-  bathroomBgName: 'bathroom',
-  bathroomBgURL: 'assets/bathroom1.png',
   actionTimer: 500,
-}
+  levelbaseTime: 10000,
+  oldLevel: 0,
+  currentLevel: 0,
+};
 
 var players = [
   {
@@ -38,7 +39,7 @@ var players = [
     lastDirection:'',
     score: 0,
   }
-]
+];
 
 var fontAssets = {
   actionFontStyle: {font: '32px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
@@ -49,22 +50,32 @@ var fontAssets = {
   scoreTextHeight: gameProperties.screenHeight * 0.02,
   scoreFontStyle: {font: '20px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
   pointsFontStyle: {font: '30px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
-}
+};
 
 var actionText, playerZeroText, playerOneText;
-var playersGroup;
+var playersGroup, textGroup;
 var sinks, showers;
-var oldLevel;
-var currentLevel;
-var levelTimer = 10000;
 var cursors;
 var actionListeners;
+var itemsInPlay, totalItemsGenerated;
 
-var levelToEnabledActions = {
-  0: [0],
-  1: [1],
-  2: [0,1]
-}
+var levels = [
+  {
+    levelName: 'bathroom',
+    levelURL: 'assets/bathroom1.png',
+    enabledActions: [0],
+  },
+  {
+    levelName: 'bathroom2',
+    levelURL: 'assets/bathroom1.png',
+    enabledActions: [1],
+  },
+  {
+    levelName: 'road',
+    levelURL: 'assets/road.png',
+    enabledActions: [0,1],
+  }
+];
 
 var actions = [
   {
@@ -89,29 +100,40 @@ var actions = [
     animationFrames: [7,8],
     points: 400,
   }
-]
+];
 
 var mainState = function(game) {
-}
+};
 
 mainState.prototype = {
 
-  preload: function() {
-    game.load.image(gameProperties.bathroomBgName, gameProperties.bathroomBgURL);
-
-    currentLevel = 0;
-    oldLevel = 0;
-
-    //load items
+  loadAssets: function() {
+    //backgrounds
+    for(var i = 0; i < levels.length; i++){
+        game.load.image(levels[i].levelName, levels[i].levelURL);
+    }
+    //items
     for(var i = 0; i < actions.length; i++){
       game.load.image(actions[i].imageName, actions[i].imageURL);
     }
 
-    //load players
+    // player sprites
     for(var i = 0; i < players.length; i++){
-      game.load.spritesheet(players[i].spriteName, players[i].spriteURL, gameProperties.playerSpriteWidth, gameProperties.playerSpriteHeight);
+      game.load.spritesheet(
+        players[i].spriteName, players[i].spriteURL,
+        gameProperties.playerSpriteWidth,
+        gameProperties.playerSpriteHeight
+      );
     }
+  },
 
+  preload: function() {
+    gameProperties.currentLevel = 0;
+    gameProperties.oldLevel = 0;
+    itemsInPlay = 0;
+    totalItemsGenerated = 0;
+
+    this.loadAssets();
   },
 
   create: function() {
@@ -119,9 +141,11 @@ mainState.prototype = {
     this.initBackground();
     this.initText();
     this.initGraphics();
+    this.calculateLevelTime();
     this.initPlayers();
 
     this.initKeyboard();
+    this.startLevelTimer();
 
     this.initButtons();
   },
@@ -145,6 +169,7 @@ mainState.prototype = {
     var actionKey = players[playersIndex].actionListeners[actionIndex];
     if(actionKey.isDown && actionKey.duration == gameProperties.actionTimer){
       item.kill();
+      itemsInPlay--;
       players[playersIndex].score += actionPoints;
       this.showPoints(player, actionPoints);
     }
@@ -155,8 +180,8 @@ mainState.prototype = {
     var width = player.position.x;
     var height = player.position.y -20;
     var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle);
-   game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);
-   game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
+    game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);
+    game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
   },
 
   movePlayers: function() {
@@ -210,13 +235,12 @@ mainState.prototype = {
         Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
         players[i].spriteName);
 
-      game.physics.arcade.enable(player);
-      player.body.collideWorldBounds = true;
-      player.animations.add('left', [0, 1], 5, true);
-      player.animations.add('right', [3, 4], 5, true);
+        game.physics.arcade.enable(player);
+        player.body.collideWorldBounds = true;
+        player.animations.add('left', [0, 1], 5, true);
+        player.animations.add('right', [3, 4], 5, true);
 
-
-      playersGroup.add(player);
+        playersGroup.add(player);
     }
     this.enableRelevantAnimations();
   },
@@ -241,7 +265,7 @@ mainState.prototype = {
   },
 
   enableRelevantAnimations: function() {
-    var enabledActions = levelToEnabledActions[currentLevel];
+    var enabledActions = levels[gameProperties.currentLevel].enabledActions;
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
       playersGroup.forEach(function(player) {
@@ -252,7 +276,7 @@ mainState.prototype = {
 
   enableRelevantActions: function() {
     this.disableAllActions();
-    var enabledActions = levelToEnabledActions[currentLevel];
+    var enabledActions = levels[gameProperties.currentLevel].enabledActions;
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
       for(var y = 0; y < players.length; y++){
@@ -275,10 +299,15 @@ mainState.prototype = {
 
   initText: function() {
     actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
-    $("#level").text("Level: " + currentLevel);
+    $("#level").text("Level: " + gameProperties.currentLevel);
 
     playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 0", fontAssets.scoreFontStyle);
     playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 0", fontAssets.scoreFontStyle);
+
+    textGroup = game.add.group();
+    textGroup.add(actionText);
+    textGroup.add(playerZeroText);
+    textGroup.add(playerOneText);
   },
 
   updateScore: function() {
@@ -287,11 +316,12 @@ mainState.prototype = {
   },
 
   initBackground: function() {
-    game.add.sprite(0,0, gameProperties.bathroomBgName);
+    gameProperties.currentBackground = game.add.sprite(0,0, levels[gameProperties.currentLevel].levelName);
   },
 
   initGraphics: function() {
-    var enabledActions = levelToEnabledActions[currentLevel];
+    totalItemsGenerated = 0;
+    var enabledActions = levels[gameProperties.currentLevel].enabledActions;
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
       actions[index].group = game.add.group();
@@ -299,41 +329,84 @@ mainState.prototype = {
 
       //create group items
       for(var y = 0; y < 3; y++){
-        var item = actions[index].group.create(
-          Math.random() * gameProperties.itemMaxWidth,
-          Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
-          actions[index].imageName);
-        item.body.collideWorldBounds = true;
+        var item = actions[index].group.getFirstExists(false);
+        if(item){
+          item.revive();
+        } else {
+            item = actions[index].group.create(
+            Math.random() * gameProperties.itemMaxWidth,
+            Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
+            actions[index].imageName);
+            item.body.collideWorldBounds = true;
+            itemsInPlay++;
+            totalItemsGenerated++;
+        }
       }
 
       var text = actions[index].commandKey + " NEW ACTION: " + actions[index].action + "!";
-      console.log(text);
       actionText.text = text;
+    }
+  },
+
+  goToNextLevel: function(){
+    if(gameProperties.currentLevel <= levels.length-2){
+      gameProperties.currentLevel++;
     }
   },
 
   initButtons: function() {
     $("#level0").click(function() {
-      console.log("level0 clicked");
-      currentLevel = 0;
+      gameProperties.currentLevel = 0;
     });
     $("#level1").click(function() {
-      currentLevel = 1;
+      gameProperties.currentLevel = 1;
     });
     $("#level2").click(function() {
-      currentLevel = 2;
+      gameProperties.currentLevel = 2;
     });
   },
 
+  calculateLevelTime: function() {
+    levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimer);
+  },
+
+  startLevelTimer: function() {
+    game.time.events.add(levelTime, this.goToNextLevel, this);
+  },
+
+  updateBackground: function() {
+    game.add.tween(gameProperties.currentBackground).to({x: -gameProperties.screenWidth}, 800, Phaser.Easing.Linear.None, true);
+
+    var newBackground = game.add.sprite(0,0, levels[gameProperties.currentLevel].levelName);
+    newBackground.alpha = 1;
+    game.add.tween(newBackground).from({x: gameProperties.screenWidth}, 800, Phaser.Easing.Linear.None, true);
+
+    gameProperties.currentBackground = newBackground;
+  },
+
   updateLevel: function() {
-    if(oldLevel !== currentLevel){
-      oldLevel = currentLevel;
-      $("#level").text("Level: " + currentLevel);
+    if(gameProperties.oldLevel !== gameProperties.currentLevel){
+      gameProperties.oldLevel = gameProperties.currentLevel;
+      this.updateBackground();
+      $("#level").text("Level: " + gameProperties.currentLevel);
       this.initGraphics();
       this.enableRelevantAnimations();
       this.enableRelevantActions();
+      this.calculateLevelTime();
+      this.startLevelTimer();
+      //bring players to top
+      for(var actionIndex = 0; actionIndex < actions.length; actionIndex++){
+        game.world.bringToTop(actions[actionIndex].group);
+      }
+      game.world.bringToTop(textGroup);
+      game.world.bringToTop(playersGroup);
     }
-  }
+  },
+
+  render: function() {
+    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
+    + "\nItems Generated: " + totalItemsGenerated, 32, 32);
+  },
 
 };
 
