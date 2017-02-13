@@ -1,23 +1,23 @@
 var gameProperties = {
   screenWidth: 800,
   screenHeight: 600,
-  playerSpriteHeight: 100,
-  playerSpriteWidth: 67,
+  playerSpriteHeight: 200,
+  playerSpriteWidth: 134,
   playerSpeed: 300,
   playerStartWidth: 32,
   itemMinHeight: 191,
   itemMaxHeight:200,
   itemMaxWidth: 800,
   actionTimer: 500,
-  levelbaseTime: 10000,
-  oldLevel: 0,
-  currentLevel: 0,
+  levelbaseTime: 3000,
+  oldLevel: 2,
+  currentLevel: 2,
 };
 
 var players = [
   {
     spriteName: 'player0',
-    spriteURL: 'assets/player1.png',
+    spriteURL: 'assets/player12.png',
     upCommand: Phaser.Keyboard.I,
     downCommand: Phaser.Keyboard.K,
     leftCommand: Phaser.Keyboard.J,
@@ -29,7 +29,7 @@ var players = [
   },
   {
     spriteName: 'player1',
-    spriteURL: 'assets/player22.png',
+    spriteURL: 'assets/player2.png',
     upCommand: Phaser.Keyboard.W,
     downCommand: Phaser.Keyboard.S,
     leftCommand: Phaser.Keyboard.A,
@@ -46,7 +46,7 @@ var fontAssets = {
   actionTextWidth: 16,
   actionTextHeight: gameProperties.screenHeight - 50,
   scoreTextWidthLeft: gameProperties.screenWidth * 0.02,
-  scoreTextWidthRight: gameProperties.screenWidth * 0.82,
+  scoreTextWidthRight: gameProperties.screenWidth * 0.80,
   scoreTextHeight: gameProperties.screenHeight * 0.02,
   scoreFontStyle: {font: '20px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
   pointsFontStyle: {font: '30px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
@@ -74,6 +74,11 @@ var levels = [
     levelName: 'road',
     levelURL: 'assets/road.png',
     enabledActions: [0,1],
+  },
+  {
+    levelName: 'outsideSchool',
+    levelURL: 'assets/school.png',
+    enabledActions: [0,1],
   }
 ];
 
@@ -83,7 +88,7 @@ var actions = [
     command: [Phaser.Keyboard.N, Phaser.Keyboard.Z],
     commandKey: ["[N]", "[Z]"],
     imageName: 'sink',
-    imageURL: 'assets/sink1.png',
+    imageURL: 'assets/sink2.png',
     group: sinks,
     animationName: 'brushTeeth',
     animationFrames: [5,6],
@@ -94,7 +99,7 @@ var actions = [
     command: [Phaser.Keyboard.M, Phaser.Keyboard.X],
     commandKey: ["[M]", "[X]"],
     imageName: 'shower',
-    imageURL: 'assets/shower1.png',
+    imageURL: 'assets/shower3.png',
     group: showers,
     animationName: 'shower',
     animationFrames: [7,8],
@@ -128,8 +133,8 @@ mainState.prototype = {
   },
 
   preload: function() {
-    gameProperties.currentLevel = 0;
-    gameProperties.oldLevel = 0;
+    gameProperties.currentLevel = 2;
+    gameProperties.oldLevel = 2;
     itemsInPlay = 0;
     totalItemsGenerated = 0;
 
@@ -301,8 +306,8 @@ mainState.prototype = {
     actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
     $("#level").text("Level: " + gameProperties.currentLevel);
 
-    playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 0", fontAssets.scoreFontStyle);
-    playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 0", fontAssets.scoreFontStyle);
+    playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyle);
+    playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 000000", fontAssets.scoreFontStyle);
 
     textGroup = game.add.group();
     textGroup.add(actionText);
@@ -311,8 +316,10 @@ mainState.prototype = {
   },
 
   updateScore: function() {
-    playerZeroText.text = "Player 1: " + players[0].score;
-    playerOneText.text = "Player 2: " + players[1].score;
+    var p1 = "00000" + players[0].score;
+    var p2 = "00000" + players[1].score;
+    playerZeroText.text = "Player 1: " + p1.substr(p1.length - 6);
+    playerOneText.text = "Player 2: " + p2.substr(p2.length - 6);
   },
 
   initBackground: function() {
@@ -354,17 +361,17 @@ mainState.prototype = {
     }
   },
 
-  initButtons: function() {
-    $("#level0").click(function() {
-      gameProperties.currentLevel = 0;
-    });
-    $("#level1").click(function() {
-      gameProperties.currentLevel = 1;
-    });
-    $("#level2").click(function() {
-      gameProperties.currentLevel = 2;
-    });
-  },
+  // initButtons: function() {
+  //   $("#level0").click(function() {
+  //     gameProperties.currentLevel = 0;
+  //   });
+  //   $("#level1").click(function() {
+  //     gameProperties.currentLevel = 1;
+  //   });
+  //   $("#level2").click(function() {
+  //     gameProperties.currentLevel = 2;
+  //   });
+  // },
 
   calculateLevelTime: function() {
     levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimer);
