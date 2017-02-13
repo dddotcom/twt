@@ -2,7 +2,8 @@ var gameProperties = {
   screenWidth: 800,
   screenHeight: 600,
   playerSpriteHeight: 200,
-  playerSpriteWidth: 134,
+  playerSpriteWidth: 129,
+  // playerSpriteWidth: 133,
   playerSpeed: 300,
   playerStartWidth: 32,
   itemMinHeight: 191,
@@ -12,12 +13,13 @@ var gameProperties = {
   levelbaseTime: 3000,
   oldLevel: 2,
   currentLevel: 2,
+  itemsToGenerate: 2
 };
 
 var players = [
   {
     spriteName: 'player0',
-    spriteURL: 'assets/player12.png',
+    spriteURL: 'assets/player1_moreActions11.png',
     upCommand: Phaser.Keyboard.I,
     downCommand: Phaser.Keyboard.K,
     leftCommand: Phaser.Keyboard.J,
@@ -54,7 +56,7 @@ var fontAssets = {
 
 var actionText, playerZeroText, playerOneText;
 var playersGroup, textGroup;
-var sinks, showers;
+var sinks, showers, skunks;
 var cursors;
 var actionListeners;
 var itemsInPlay, totalItemsGenerated;
@@ -78,7 +80,7 @@ var levels = [
   {
     levelName: 'outsideSchool',
     levelURL: 'assets/school.png',
-    enabledActions: [0,1],
+    enabledActions: [0,1,2],
   }
 ];
 
@@ -104,6 +106,17 @@ var actions = [
     animationName: 'shower',
     animationFrames: [7,8],
     points: 400,
+  },
+  {
+    action: "FART",
+    command: [Phaser.Keyboard.B, Phaser.Keyboard.C],
+    commandKey: ["[B]", "[C]"],
+    imageName: 'skunk',
+    imageURL: 'assets/skunk.png',
+    group: skunks,
+    animationName: 'fart',
+    animationFrames: [9,10,11],
+    points: 800,
   }
 ];
 
@@ -133,8 +146,8 @@ mainState.prototype = {
   },
 
   preload: function() {
-    gameProperties.currentLevel = 2;
-    gameProperties.oldLevel = 2;
+    gameProperties.currentLevel = 3;
+    gameProperties.oldLevel = 3;
     itemsInPlay = 0;
     totalItemsGenerated = 0;
 
@@ -151,8 +164,6 @@ mainState.prototype = {
 
     this.initKeyboard();
     this.startLevelTimer();
-
-    this.initButtons();
   },
 
   update: function() {
@@ -208,15 +219,25 @@ mainState.prototype = {
         this.moveUpAndDown(playersGroup.children[i]);
       }
       else if(players[i].actionListeners[0].isDown){
-        playersGroup.children[i].animations.play('brushTeeth');
+        playersGroup.children[i].animations.play(actions[0].animationName);
       } else if(players[i].actionListeners[1].isDown){
-        playersGroup.children[i].animations.play('shower');
+        playersGroup.children[i].animations.play(actions[1].animationName);
+      } else if(players[i].actionListeners[2].isDown){
+        playersGroup.children[i].animations.play(actions[2].animationName);
       }
       else {
         playersGroup.children[i].animations.stop();
         playersGroup.children[i].body.velocity.y = 0;
         playersGroup.children[i].frame = 2;
       }
+
+      // for(var actionIndex = 0; actionIndex < actions.length; actionIndex++){
+      //   if(players[i].actionListeners[actionIndex].isDown){
+      //     playersGroup.children[i].animations.play(actions[0].animationName);
+      //   }
+      // }
+
+
     }
   },
 
@@ -335,7 +356,7 @@ mainState.prototype = {
       actions[index].group.enableBody = true;
 
       //create group items
-      for(var y = 0; y < 3; y++){
+      for(var y = 0; y < gameProperties.itemsToGenerate; y++){
         var item = actions[index].group.getFirstExists(false);
         if(item){
           item.revive();
@@ -360,18 +381,6 @@ mainState.prototype = {
       gameProperties.currentLevel++;
     }
   },
-
-  // initButtons: function() {
-  //   $("#level0").click(function() {
-  //     gameProperties.currentLevel = 0;
-  //   });
-  //   $("#level1").click(function() {
-  //     gameProperties.currentLevel = 1;
-  //   });
-  //   $("#level2").click(function() {
-  //     gameProperties.currentLevel = 2;
-  //   });
-  // },
 
   calculateLevelTime: function() {
     levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimer);
