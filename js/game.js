@@ -10,10 +10,10 @@ var gameProperties = {
   itemMaxHeight:200,
   itemMaxWidth: 800,
   actionTimer: 500,
-  levelbaseTime: 3000,
-  oldLevel: 2,
-  currentLevel: 2,
-  itemsToGenerate: 2
+  levelbaseTime: 7000,
+  oldLevel: 0,
+  currentLevel: 0,
+  itemsToGenerate: 3
 };
 
 var players = [
@@ -85,7 +85,7 @@ var levels = [
   {
     levelName: 'outsideSchool',
     levelURL: 'assets/school.png',
-    enabledActions: [0,1,2],
+    enabledActions: [2],
   }
 ];
 
@@ -151,8 +151,6 @@ mainState.prototype = {
   },
 
   preload: function() {
-    gameProperties.currentLevel = 3;
-    gameProperties.oldLevel = 3;
     itemsInPlay = 0;
     totalItemsGenerated = 0;
 
@@ -188,8 +186,21 @@ mainState.prototype = {
     var actionPoints = actions[actionIndex].points;
     var playersIndex = player.key.split("player")[1];
     var actionKey = players[playersIndex].actionListeners[actionIndex];
+
     if(actionKey.isDown && actionKey.duration == gameProperties.actionTimer){
-      item.kill();
+      var playerWidth = player.position.x;
+      var fadeDirection;
+      if(playerWidth < gameProperties.screenWidth/2){
+        fadeDirection = 0;
+      } else {
+        fadeDirection = gameProperties.screenWidth;
+      }
+
+      var fadeAway = game.add.tween(item).to({x: fadeDirection}, 800, Phaser.Easing.Linear.None, true);
+      fadeAway.chain(game.add.tween(item).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true));
+      fadeAway.onComplete.addOnce(item.kill, this);
+      fadeAway.start();
+
       itemsInPlay--;
       players[playersIndex].score += actionPoints;
       this.showPoints(player, actionPoints);
@@ -420,7 +431,9 @@ mainState.prototype = {
       this.calculateLevelTime();
       this.startLevelTimer();
       //bring players to top
-      for(var actionIndex = 0; actionIndex < actions.length; actionIndex++){
+      var enabledActions = levels[gameProperties.currentLevel].enabledActions;
+      for(var i = 0; i < enabledActions.length; i++){
+        var actionIndex = enabledActions[i];
         game.world.bringToTop(actions[actionIndex].group);
       }
       game.world.bringToTop(textGroup);
@@ -429,8 +442,8 @@ mainState.prototype = {
   },
 
   render: function() {
-    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
-    + "\nItems Generated: " + totalItemsGenerated, 32, 32);
+    // game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
+    // + "\nItems Generated: " + totalItemsGenerated, 32, 32);
   },
 
 };
