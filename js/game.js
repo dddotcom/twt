@@ -31,7 +31,7 @@ var players = [
   },
   {
     spriteName: 'player1',
-    spriteURL: 'assets/player2.png',
+    spriteURL: 'assets/player2_moreActions3.png',
     upCommand: Phaser.Keyboard.W,
     downCommand: Phaser.Keyboard.S,
     leftCommand: Phaser.Keyboard.A,
@@ -44,14 +44,19 @@ var players = [
 ];
 
 var fontAssets = {
-  actionFontStyle: {font: '32px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  actionFontStyle: {font: '32px "Fredoka One"', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
   actionTextWidth: 16,
   actionTextHeight: gameProperties.screenHeight - 50,
-  scoreTextWidthLeft: gameProperties.screenWidth * 0.02,
-  scoreTextWidthRight: gameProperties.screenWidth * 0.80,
+  scoreTextWidthLeft: gameProperties.screenWidth * 0.01,
+  scoreTextWidthRight: gameProperties.screenWidth * 0.72,
   scoreTextHeight: gameProperties.screenHeight * 0.02,
-  scoreFontStyle: {font: '20px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
-  pointsFontStyle: {font: '30px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  scoreFontStyle: {font: '25px "Fredoka One"', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  scoreFontStyleP1: {font: '25px "Fredoka One"', fill: '#33cc33'},
+  scoreFontStyleP2: {font: '25px "Fredoka One"', fill: '#cc3399'},
+  pointsFontStyle: [
+    {font: '30px "Fredoka One"', fill: '#33cc33', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+    {font: '30px "Fredoka One"', fill: '#cc3399', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  ],
 };
 
 var actionText, playerZeroText, playerOneText;
@@ -193,9 +198,11 @@ mainState.prototype = {
   },
 
   showPoints: function(player, actionPoints) {
+    var playersIndex = player.key.split("player")[1];
     var width = player.position.x;
     var height = player.position.y -20;
-    var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle);
+    var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle[playersIndex]);
+    points.setShadow(3, 3, 'rgba(0,0,0,1.0)', 0);
     game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);
     game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
   },
@@ -327,8 +334,10 @@ mainState.prototype = {
     actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
     $("#level").text("Level: " + gameProperties.currentLevel);
 
-    playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyle);
-    playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 000000", fontAssets.scoreFontStyle);
+    playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyleP1);
+    playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 000000", fontAssets.scoreFontStyleP2);
+    playerZeroText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
+    playerOneText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
 
     textGroup = game.add.group();
     textGroup.add(actionText);
