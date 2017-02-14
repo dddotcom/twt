@@ -11,9 +11,9 @@ var gameProperties = {
   itemMaxWidth: 800,
   actionTimer: 500,
   levelbaseTime: 7000,
-  oldLevel: 4,
-  currentLevel: 4,
-  itemsToGenerate: 3
+  oldLevel: 0,
+  currentLevel: 0,
+  itemsToGenerate: 1
 };
 
 var players = [
@@ -68,30 +68,70 @@ var itemsInPlay, totalItemsGenerated;
 
 var levels = [
   {
-    levelName: 'bathroom',
+    levelName: '0',
+    levelURL: 'assets/br_day.png',
+    enabledActions: [],
+  },
+  {
+    levelName: '1',
     levelURL: 'assets/bathroom1.png',
     enabledActions: [0],
   },
   {
-    levelName: 'bathroom2',
+    levelName: '2',
     levelURL: 'assets/bathroom1.png',
     enabledActions: [1],
   },
   {
-    levelName: 'road',
+    levelName: '3',
     levelURL: 'assets/road.png',
-    enabledActions: [0,1],
+    enabledActions: [2],
   },
   {
-    levelName: 'outsideSchool',
+    levelName: '4',
+    levelURL: 'assets/road.png',
+    enabledActions: [0],
+  },
+  {
+    levelName: '5',
+    levelURL: 'assets/school.png',
+    enabledActions: [1],
+  },
+  {
+    levelName: '6',
+    levelURL: 'assets/classroom1.png',
+    enabledActions: [2],
+  },
+  {
+    levelName: '7',
+    levelURL: 'assets/hallway1.png',
+    enabledActions: [0],
+  },
+  {
+    levelName: '8',
+    levelURL: 'assets/classroom1.png',
+    enabledActions: [1],
+  },
+  {
+    levelName: '9',
     levelURL: 'assets/school.png',
     enabledActions: [2],
   },
   {
-    levelName: 'classroom',
-    levelURL: 'assets/classroom1.png',
-    enabledActions: [2],
-  }
+    levelName: '10',
+    levelURL: 'assets/road.png',
+    enabledActions: [0],
+  },
+  {
+    levelName: '11',
+    levelURL: 'assets/bathroom1.png',
+    enabledActions: [1],
+  },
+  {
+    levelName: '12',
+    levelURL: 'assets/br_night.png',
+    enabledActions: [],
+  },
 ];
 
 var actions = [
