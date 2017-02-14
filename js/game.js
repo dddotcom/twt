@@ -11,8 +11,8 @@ var gameProperties = {
   itemMaxWidth: 800,
   actionTimer: 500,
   levelbaseTime: 7000,
-  oldLevel: 0,
-  currentLevel: 0,
+  oldLevel: 4,
+  currentLevel: 4,
   itemsToGenerate: 3
 };
 
@@ -85,6 +85,11 @@ var levels = [
   {
     levelName: 'outsideSchool',
     levelURL: 'assets/school.png',
+    enabledActions: [2],
+  },
+  {
+    levelName: 'classroom',
+    levelURL: 'assets/classroom1.png',
     enabledActions: [2],
   }
 ];
