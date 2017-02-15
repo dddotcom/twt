@@ -3,7 +3,6 @@ var gameProperties = {
   screenHeight: 600,
   playerSpriteHeight: 200,
   playerSpriteWidth: 126,
-  // playerSpriteWidth: 129,
   playerSpeed: 300,
   playerStartWidth: 32,
   itemMinHeight: 191,
@@ -19,19 +18,8 @@ var gameProperties = {
 var players = [
   {
     spriteName: 'player0',
-    spriteURL: 'assets/playerSprites/player1_evenMoreActions6.png',
-    upCommand: Phaser.Keyboard.I,
-    downCommand: Phaser.Keyboard.K,
-    leftCommand: Phaser.Keyboard.J,
-    rightCommand: Phaser.Keyboard.L,
-    commandListeners: [],
-    actionListeners: [],
-    lastDirection: '',
-    score: 0,
-  },
-  {
-    spriteName: 'player1',
     spriteURL: 'assets/playerSprites/player3_evenMoreActions1.png',
+    scoreImg: 'assets/playerSprites/player2.png',
     upCommand: Phaser.Keyboard.W,
     downCommand: Phaser.Keyboard.S,
     leftCommand: Phaser.Keyboard.A,
@@ -40,7 +28,23 @@ var players = [
     actionListeners: [],
     lastDirection:'',
     score: 0,
-  }
+    validKeys: [],
+  },
+  {
+    spriteName: 'player1',
+    spriteURL: 'assets/playerSprites/player1_evenMoreActions6.png',
+    scoreImg: 'assets/playerSprites/player1.png',
+    upCommand: Phaser.Keyboard.I,
+    downCommand: Phaser.Keyboard.K,
+    leftCommand: Phaser.Keyboard.J,
+    rightCommand: Phaser.Keyboard.L,
+    commandListeners: [],
+    actionListeners: [],
+    lastDirection: '',
+    score: 0,
+    validKeys: [],
+  },
+
 ];
 
 var fontAssets = {
@@ -59,7 +63,7 @@ var fontAssets = {
   ],
 };
 
-var actionText, playerZeroText, playerOneText;
+var playerZeroText, playerOneText;
 var playersGroup, textGroup;
 var sinks, showers, skunks, rocks, chalkboards, microphones;
 var cursors;
@@ -137,69 +141,69 @@ var levels = [
 var actions = [
   {
     action: "BRUSH TEETH",
-    command: [Phaser.Keyboard.P, Phaser.Keyboard.ONE],
-    commandKey: ["[P]", "[1]"],
+    command: [Phaser.Keyboard.ONE, Phaser.Keyboard.SEVEN],
     imageName: 'sink',
     imageURL: 'assets/items/sink2.png',
     group: sinks,
     animationName: 'brushTeeth',
     animationFrames: [5,6],
     points: 800,
+    color: 'blue',
   },
   {
     action: "GET NAKED",
-    command: [Phaser.Keyboard.O, Phaser.Keyboard.TWO],
-    commandKey: ["[O]", "[2]"],
+    command: [Phaser.Keyboard.TWO, Phaser.Keyboard.EIGHT],
     imageName: 'shower',
     imageURL: 'assets/items/shower3.png',
     group: showers,
     animationName: 'shower',
     animationFrames: [7,8],
     points: 400,
+    color: 'green',
   },
   {
     action: "FART",
-    command: [Phaser.Keyboard.ZERO, Phaser.Keyboard.THREE],
-    commandKey: ["[0]", "[3]"],
+    command: [Phaser.Keyboard.THREE, Phaser.Keyboard.NINE],
     imageName: 'skunk',
     imageURL: 'assets/items/skunk.png',
     group: skunks,
     animationName: 'fart',
     animationFrames: [9,10,11],
     points: 800,
+    color: 'purple'
   },
   {
     action: "BRANDISH",
-    command: [Phaser.Keyboard.NINE, Phaser.Keyboard.FOUR],
-    commandKey: ["[9]", "[4]"],
+    command: [Phaser.Keyboard.FOUR, Phaser.Keyboard.ZERO],
     imageName: 'rock',
     imageURL: 'assets/items/sword.png',
     group: rocks,
     animationName: 'brandish',
     animationFrames: [12,13],
     points: 800,
+    color: 'orange',
   },
   {
     action: "ANSWER",
-    command: [Phaser.Keyboard.EIGHT, Phaser.Keyboard.FIVE],
-    commandKey: ["[8]", "[5]"],
+    command: [Phaser.Keyboard.Q, Phaser.Keyboard.U],
     imageName: 'chalkboard',
     imageURL: 'assets/items/chalkboard.png',
     group: chalkboards,
     animationName: 'answer',
     animationFrames: [14,15,16],
     points: 800,
+    color: 'lavender',
   },
   {
     action: "ROCK OUT",
-    command: [Phaser.Keyboard.SEVEN, Phaser.Keyboard.SIX],
-    commandKey: ["[7]", "[6]"],
+    command: [Phaser.Keyboard.E, Phaser.Keyboard.O],
     imageName: 'microphone',
     imageURL: 'assets/items/microphone.png',
     group: microphones,
     animationName: 'rockOut',
     animationFrames: [18,19],
     points: 800,
+    color: 'red',
   },
 ];
 
@@ -296,6 +300,10 @@ mainState.prototype = {
     game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
   },
 
+  removeHover: function(playerControllerId) {
+    $("#" + playerControllerId + " .controllerButton").removeClass("hover");
+  },
+
   movePlayers: function() {
     for(var i = 0; i < playersGroup.children.length; i++){
       playersGroup.children[i].body.velocity.x = 0;
@@ -317,30 +325,29 @@ mainState.prototype = {
       //TODO: genericize this
       else if(players[i].actionListeners[0].isDown){
         playersGroup.children[i].animations.play(actions[0].animationName);
+        $("#" + actions[0].command[i]).addClass("hover");
       } else if(players[i].actionListeners[1].isDown){
         playersGroup.children[i].animations.play(actions[1].animationName);
+        $("#" + actions[1].command[i]).addClass("hover");
       } else if(players[i].actionListeners[2].isDown){
         playersGroup.children[i].animations.play(actions[2].animationName);
+        $("#" + actions[2].command[i]).addClass("hover");
       } else if(players[i].actionListeners[3].isDown){
         playersGroup.children[i].animations.play(actions[3].animationName);
+        $("#" + actions[3].command[i]).addClass("hover");
       } else if(players[i].actionListeners[4].isDown){
         playersGroup.children[i].animations.play(actions[4].animationName);
+        $("#" + actions[4].command[i]).addClass("hover");
       } else if(players[i].actionListeners[5].isDown){
         playersGroup.children[i].animations.play(actions[5].animationName);
+        $("#" + actions[5].command[i]).addClass("hover");
       }
       else {
+        this.removeHover(players[i].spriteName);
         playersGroup.children[i].animations.stop();
         playersGroup.children[i].body.velocity.y = 0;
         playersGroup.children[i].frame = 2;
       }
-
-      // for(var actionIndex = 0; actionIndex < actions.length; actionIndex++){
-      //   if(players[i].actionListeners[actionIndex].isDown){
-      //     playersGroup.children[i].animations.play(actions[0].animationName);
-      //   }
-      // }
-
-
     }
   },
 
@@ -351,6 +358,12 @@ mainState.prototype = {
   	} else {
   		player.animations.play('right');
   	}
+  },
+
+  populateValidKeysArray: function(playerIndex) {
+    for(var i = 0; i < actions.length; i++){
+      players[playerIndex].validKeys.push(actions[i].command[playerIndex]);
+    }
   },
 
   initPlayers: function() {
@@ -370,7 +383,10 @@ mainState.prototype = {
         player.animations.add('right', [3, 4], 5, true);
 
         playersGroup.add(player);
+
+        this.populateValidKeysArray(i);
     }
+
     this.enableRelevantAnimations();
   },
 
@@ -387,9 +403,8 @@ mainState.prototype = {
         players[i].actionListeners.push(game.input.keyboard.addKey(actions[y].command[i]));
       }
     }
-
-
     //only enable those that are relevant to the level
+    this.disableAllActions();
     this.enableRelevantActions();
   },
 
@@ -404,7 +419,7 @@ mainState.prototype = {
   },
 
   enableRelevantActions: function() {
-    this.disableAllActions();
+    // this.disableAllActions();
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
@@ -427,16 +442,12 @@ mainState.prototype = {
   },
 
   initText: function() {
-    actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
-    $("#level").text("Level: " + gameProperties.currentLevel);
-
     playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyleP1);
     playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 000000", fontAssets.scoreFontStyleP2);
     playerZeroText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
     playerOneText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
 
     textGroup = game.add.group();
-    textGroup.add(actionText);
     textGroup.add(playerZeroText);
     textGroup.add(playerOneText);
   },
@@ -446,6 +457,8 @@ mainState.prototype = {
     var p2 = "00000" + players[1].score;
     playerZeroText.text = "Player 1: " + p1.substr(p1.length - 6);
     playerOneText.text = "Player 2: " + p2.substr(p2.length - 6);
+    updatePoints(0, p1.substr(p1.length - 6));
+    updatePoints(1, p2.substr(p1.length - 6));
   },
 
   initBackground: function() {
@@ -454,7 +467,15 @@ mainState.prototype = {
 
   initGraphics: function() {
     totalItemsGenerated = 0;
+    var text;
+    var color;
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
+    console.log("enabled actions = " + enabledActions);
+    if(enabledActions.length === 0){
+      text = "";
+      color = "";
+    }
+
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
       actions[index].group = game.add.group();
@@ -475,10 +496,10 @@ mainState.prototype = {
             totalItemsGenerated++;
         }
       }
-
-      var text = actions[index].commandKey + " NEW ACTION: " + actions[index].action + "!";
-      actionText.text = text;
+      text = " NEW ACTION: " + actions[index].action + "!";
+      color = actions[index].color;
     }
+    updateActionText(text, color);
   },
 
   goToNextLevel: function(){
@@ -508,14 +529,22 @@ mainState.prototype = {
   updateLevel: function() {
     if(gameProperties.oldLevel !== gameProperties.currentLevel){
       gameProperties.oldLevel = gameProperties.currentLevel;
+      console.log("current level is: " + gameProperties.currentLevel);
       this.updateBackground();
-      $("#level").text("Level: " + gameProperties.currentLevel);
       this.initGraphics();
-      this.enableRelevantAnimations();
+
+      if(gameProperties.currentLevel >= 7){
+        //start switching buttons
+        randomizePlayerActions(0);
+        randomizePlayerActions(1);
+      }
       this.enableRelevantActions();
+      this.enableRelevantAnimations();
       this.calculateLevelTime();
       this.startLevelTimer();
-      //bring players to top
+
+      //bring players to the top
+      //TODO: FIX THIS BECAUSE ITEMS ARE BEING BURIED..
       var enabledActions = levels[gameProperties.currentLevel].enabledActions;
       for(var i = 0; i < enabledActions.length; i++){
         var actionIndex = enabledActions[i];
