@@ -12,7 +12,7 @@ var gameProperties = {
   levelbaseTime: 7000,
   oldLevel: 0,
   currentLevel: 0,
-  itemsToGenerate: 2
+  itemsToGenerate: 0
 };
 
 var players = [
@@ -27,6 +27,7 @@ var players = [
     actionListeners: [],
     lastDirection:'',
     score: 0,
+    validKeys: [],
   },
   {
     spriteName: 'player1',
@@ -39,6 +40,7 @@ var players = [
     actionListeners: [],
     lastDirection: '',
     score: 0,
+    validKeys: [],
   },
 
 ];
@@ -70,75 +72,75 @@ var levels = [
   {
     levelName: '0',
     levelURL: 'assets/backgrounds/br_day.png',
-    enabledActions: [],
+    enabledActions: [0,1,2,3,4,5],
   },
-  {
-    levelName: '1',
-    levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [0], //teeth
-  },
-  {
-    levelName: '2',
-    levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [1], //shower
-  },
-  {
-    levelName: '3',
-    levelURL: 'assets/backgrounds/road.png',
-    enabledActions: [3], //brandish
-  },
-  {
-    levelName: '4',
-    levelURL: 'assets/backgrounds/road.png',
-    enabledActions: [2], //fart
-  },
-  {
-    levelName: '5',
-    levelURL: 'assets/backgrounds/school.png',
-    enabledActions: [2,3], //bat
-  },
-  {
-    levelName: '6',
-    levelURL: 'assets/backgrounds/classroom1.png',
-    enabledActions: [4], //answer
-  },
-  {
-    levelName: '7',
-    levelURL: 'assets/backgrounds/hallway1.png',
-    enabledActions: [5], //rockout
-  },
-  {
-    levelName: '8',
-    levelURL: 'assets/backgrounds/classroom1.png',
-    enabledActions: [4], //answer
-  },
-  {
-    levelName: '9',
-    levelURL: 'assets/backgrounds/school.png',
-    enabledActions: [5,3], //bat
-  },
-  {
-    levelName: '10',
-    levelURL: 'assets/backgrounds/road.png',
-    enabledActions: [0,3,5], //all + punch
-  },
-  {
-    levelName: '11',
-    levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [0,1,4,2], //all
-  },
-  {
-    levelName: '12',
-    levelURL: 'assets/backgrounds/br_night.png',
-    enabledActions: [], //sleep
-  },
+  // {
+  //   levelName: '1',
+  //   levelURL: 'assets/backgrounds/bathroom1.png',
+  //   enabledActions: [0], //teeth
+  // },
+  // {
+  //   levelName: '2',
+  //   levelURL: 'assets/backgrounds/bathroom1.png',
+  //   enabledActions: [1], //shower
+  // },
+  // {
+  //   levelName: '3',
+  //   levelURL: 'assets/backgrounds/road.png',
+  //   enabledActions: [3], //brandish
+  // },
+  // {
+  //   levelName: '4',
+  //   levelURL: 'assets/backgrounds/road.png',
+  //   enabledActions: [2], //fart
+  // },
+  // {
+  //   levelName: '5',
+  //   levelURL: 'assets/backgrounds/school.png',
+  //   enabledActions: [2,3], //bat
+  // },
+  // {
+  //   levelName: '6',
+  //   levelURL: 'assets/backgrounds/classroom1.png',
+  //   enabledActions: [4], //answer
+  // },
+  // {
+  //   levelName: '7',
+  //   levelURL: 'assets/backgrounds/hallway1.png',
+  //   enabledActions: [5], //rockout
+  // },
+  // {
+  //   levelName: '8',
+  //   levelURL: 'assets/backgrounds/classroom1.png',
+  //   enabledActions: [4], //answer
+  // },
+  // {
+  //   levelName: '9',
+  //   levelURL: 'assets/backgrounds/school.png',
+  //   enabledActions: [5,3], //bat
+  // },
+  // {
+  //   levelName: '10',
+  //   levelURL: 'assets/backgrounds/road.png',
+  //   enabledActions: [0,3,5], //all + punch
+  // },
+  // {
+  //   levelName: '11',
+  //   levelURL: 'assets/backgrounds/bathroom1.png',
+  //   enabledActions: [0,1,4,2], //all
+  // },
+  // {
+  //   levelName: '12',
+  //   levelURL: 'assets/backgrounds/br_night.png',
+  //   enabledActions: [], //sleep
+  // },
 ];
 
 var actions = [
   {
     action: "BRUSH TEETH",
     command: [Phaser.Keyboard.ONE, Phaser.Keyboard.P],
-    commandKey: ["1", "P"],
+    // commandKey: ["1", "P"],
     imageName: 'sink',
     imageURL: 'assets/items/sink2.png',
     group: sinks,
@@ -150,7 +152,7 @@ var actions = [
   {
     action: "GET NAKED",
     command: [Phaser.Keyboard.TWO, Phaser.Keyboard.O],
-    commandKey: ["2", "O"],
+    // commandKey: ["2", "O"],
     imageName: 'shower',
     imageURL: 'assets/items/shower3.png',
     group: showers,
@@ -162,7 +164,7 @@ var actions = [
   {
     action: "FART",
     command: [Phaser.Keyboard.THREE, Phaser.Keyboard.ZERO],
-    commandKey: ["3", "0"],
+    // commandKey: ["3", "0"],
     imageName: 'skunk',
     imageURL: 'assets/items/skunk.png',
     group: skunks,
@@ -174,7 +176,7 @@ var actions = [
   {
     action: "BRANDISH",
     command: [Phaser.Keyboard.FOUR, Phaser.Keyboard.NINE],
-    commandKey: ["4", "9"],
+    // commandKey: ["4", "9"],
     imageName: 'rock',
     imageURL: 'assets/items/sword.png',
     group: rocks,
@@ -186,7 +188,7 @@ var actions = [
   {
     action: "ANSWER",
     command: [Phaser.Keyboard.FIVE, Phaser.Keyboard.EIGHT],
-    commandKey: ["5", "8"],
+    // commandKey: ["5", "8"],
     imageName: 'chalkboard',
     imageURL: 'assets/items/chalkboard.png',
     group: chalkboards,
@@ -198,7 +200,7 @@ var actions = [
   {
     action: "ROCK OUT",
     command: [Phaser.Keyboard.SIX, Phaser.Keyboard.SEVEN],
-    commandKey: ["6", "7"],
+    // commandKey: ["6", "7"],
     imageName: 'microphone',
     imageURL: 'assets/items/microphone.png',
     group: microphones,
@@ -327,22 +329,22 @@ mainState.prototype = {
       //TODO: genericize this
       else if(players[i].actionListeners[0].isDown){
         playersGroup.children[i].animations.play(actions[0].animationName);
-        $("#" + actions[0].commandKey[i]).addClass("hover");
+        $("#" + actions[0].command[i]).addClass("hover");
       } else if(players[i].actionListeners[1].isDown){
         playersGroup.children[i].animations.play(actions[1].animationName);
-        $("#" + actions[1].commandKey[i]).addClass("hover");
+        $("#" + actions[1].command[i]).addClass("hover");
       } else if(players[i].actionListeners[2].isDown){
         playersGroup.children[i].animations.play(actions[2].animationName);
-        $("#" + actions[2].commandKey[i]).addClass("hover");
+        $("#" + actions[2].command[i]).addClass("hover");
       } else if(players[i].actionListeners[3].isDown){
         playersGroup.children[i].animations.play(actions[3].animationName);
-        $("#" + actions[3].commandKey[i]).addClass("hover");
+        $("#" + actions[3].command[i]).addClass("hover");
       } else if(players[i].actionListeners[4].isDown){
         playersGroup.children[i].animations.play(actions[4].animationName);
-        $("#" + actions[4].commandKey[i]).addClass("hover");
+        $("#" + actions[4].command[i]).addClass("hover");
       } else if(players[i].actionListeners[5].isDown){
         playersGroup.children[i].animations.play(actions[5].animationName);
-        $("#" + actions[5].commandKey[i]).addClass("hover");
+        $("#" + actions[5].command[i]).addClass("hover");
       }
       else {
         this.removeHover(players[i].spriteName);
@@ -370,6 +372,12 @@ mainState.prototype = {
   	}
   },
 
+  populateValidKeysArray: function(playerIndex) {
+    for(var i = 0; i < actions.length; i++){
+      players[playerIndex].validKeys.push(actions[i].command[playerIndex]);
+    }
+  },
+
   initPlayers: function() {
     playersGroup = game.add.group();
     playersGroup.enableBody = true;
@@ -387,7 +395,10 @@ mainState.prototype = {
         player.animations.add('right', [3, 4], 5, true);
 
         playersGroup.add(player);
+
+        this.populateValidKeysArray(i);
     }
+
     this.enableRelevantAnimations();
   },
 
@@ -492,7 +503,7 @@ mainState.prototype = {
         }
       }
 
-      var text = actions[index].commandKey + " NEW ACTION: " + actions[index].action + "!";
+      var text = actions[index].command+ " NEW ACTION: " + actions[index].action + "!";
       actionText.text = text;
     }
   },
