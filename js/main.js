@@ -3,11 +3,6 @@ $(document).ready( function() {
 
   displayPlayerControllers();
 
-  $("#switchKeys").click(function() {
-    randomizePlayerActions(0);
-    randomizePlayerActions(1);
-  });
-
 });
 
 function randomizePlayerActions(playerIndex){
@@ -64,4 +59,10 @@ function updateActionListeners(playerIndex){
   for(var i = 0; i < actions.length; i++){
     players[playerIndex].actionListeners.push(game.input.keyboard.addKey(actions[i].command[playerIndex]));
   }
+}
+
+function updateActionText(text, color){
+  $("#actionText span").text(text);
+  $("#actionTextButton").removeClass();
+  $("#actionTextButton").addClass(color + " controllerButton");
 }

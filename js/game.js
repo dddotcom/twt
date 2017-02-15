@@ -61,7 +61,8 @@ var fontAssets = {
   ],
 };
 
-var actionText, playerZeroText, playerOneText;
+// var actionText;
+var playerZeroText, playerOneText;
 var playersGroup, textGroup;
 var sinks, showers, skunks, rocks, chalkboards, microphones;
 var cursors;
@@ -72,68 +73,68 @@ var levels = [
   {
     levelName: '0',
     levelURL: 'assets/backgrounds/br_day.png',
-    enabledActions: [0,1,2,3,4,5],
+    enabledActions: [],
   },
-  // {
-  //   levelName: '1',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [0], //teeth
-  // },
-  // {
-  //   levelName: '2',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [1], //shower
-  // },
-  // {
-  //   levelName: '3',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [3], //brandish
-  // },
-  // {
-  //   levelName: '4',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [2], //fart
-  // },
-  // {
-  //   levelName: '5',
-  //   levelURL: 'assets/backgrounds/school.png',
-  //   enabledActions: [2,3], //bat
-  // },
-  // {
-  //   levelName: '6',
-  //   levelURL: 'assets/backgrounds/classroom1.png',
-  //   enabledActions: [4], //answer
-  // },
-  // {
-  //   levelName: '7',
-  //   levelURL: 'assets/backgrounds/hallway1.png',
-  //   enabledActions: [5], //rockout
-  // },
-  // {
-  //   levelName: '8',
-  //   levelURL: 'assets/backgrounds/classroom1.png',
-  //   enabledActions: [4], //answer
-  // },
-  // {
-  //   levelName: '9',
-  //   levelURL: 'assets/backgrounds/school.png',
-  //   enabledActions: [5,3], //bat
-  // },
-  // {
-  //   levelName: '10',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [0,3,5], //all + punch
-  // },
-  // {
-  //   levelName: '11',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [0,1,4,2], //all
-  // },
-  // {
-  //   levelName: '12',
-  //   levelURL: 'assets/backgrounds/br_night.png',
-  //   enabledActions: [], //sleep
-  // },
+  {
+    levelName: '1',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0], //teeth
+  },
+  {
+    levelName: '2',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [1], //shower
+  },
+  {
+    levelName: '3',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [3], //brandish
+  },
+  {
+    levelName: '4',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [2], //fart
+  },
+  {
+    levelName: '5',
+    levelURL: 'assets/backgrounds/school.png',
+    enabledActions: [2,3], //bat
+  },
+  {
+    levelName: '6',
+    levelURL: 'assets/backgrounds/classroom1.png',
+    enabledActions: [4], //answer
+  },
+  {
+    levelName: '7',
+    levelURL: 'assets/backgrounds/hallway1.png',
+    enabledActions: [5], //rockout
+  },
+  {
+    levelName: '8',
+    levelURL: 'assets/backgrounds/classroom1.png',
+    enabledActions: [4], //answer
+  },
+  {
+    levelName: '9',
+    levelURL: 'assets/backgrounds/school.png',
+    enabledActions: [5,3], //bat
+  },
+  {
+    levelName: '10',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [0,3,5], //all + punch
+  },
+  {
+    levelName: '11',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0,1,4,2], //all
+  },
+  {
+    levelName: '12',
+    levelURL: 'assets/backgrounds/br_night.png',
+    enabledActions: [], //sleep
+  },
 ];
 
 var actions = [
@@ -454,7 +455,7 @@ mainState.prototype = {
   },
 
   initText: function() {
-    actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
+    // actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
     // $("#level").text("Level: " + gameProperties.currentLevel);
 
     playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyleP1);
@@ -463,7 +464,7 @@ mainState.prototype = {
     playerOneText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
 
     textGroup = game.add.group();
-    textGroup.add(actionText);
+    // textGroup.add(actionText);
     textGroup.add(playerZeroText);
     textGroup.add(playerOneText);
   },
@@ -481,7 +482,15 @@ mainState.prototype = {
 
   initGraphics: function() {
     totalItemsGenerated = 0;
+    var text;
+    var color;
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
+    console.log("enabled actions = " + enabledActions);
+    if(enabledActions.length === 0){
+      text = "";
+      color = "";
+    }
+
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
       actions[index].group = game.add.group();
@@ -502,10 +511,12 @@ mainState.prototype = {
             totalItemsGenerated++;
         }
       }
-
-      var text = actions[index].command+ " NEW ACTION: " + actions[index].action + "!";
-      actionText.text = text;
+      // text = actions[index].command+ " NEW ACTION: " + actions[index].action + "!";
+      text = " NEW ACTION: " + actions[index].action + "!";
+      color = actions[index].color;
     }
+    updateActionText(text, color);
+    // actionText.text = text;
   },
 
   goToNextLevel: function(){
@@ -535,14 +546,22 @@ mainState.prototype = {
   updateLevel: function() {
     if(gameProperties.oldLevel !== gameProperties.currentLevel){
       gameProperties.oldLevel = gameProperties.currentLevel;
+      console.log("current level is: " + gameProperties.currentLevel);
       this.updateBackground();
-      // $("#level").text("Level: " + gameProperties.currentLevel);
       this.initGraphics();
+
+      if(gameProperties.currentLevel >= 7){
+        //start switching buttons
+        randomizePlayerActions(0);
+        randomizePlayerActions(1);
+      }
       this.enableRelevantActions();
       this.enableRelevantAnimations();
       this.calculateLevelTime();
       this.startLevelTimer();
-      //bring players to top
+
+      //bring players to the top
+      //TODO: FIX THIS BECAUSE ITEMS ARE BEING BURIED..
       var enabledActions = levels[gameProperties.currentLevel].enabledActions;
       for(var i = 0; i < enabledActions.length; i++){
         var actionIndex = enabledActions[i];
