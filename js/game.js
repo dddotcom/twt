@@ -2,22 +2,24 @@ var gameProperties = {
   screenWidth: 800,
   screenHeight: 600,
   playerSpriteHeight: 200,
-  playerSpriteWidth: 134,
+  playerSpriteWidth: 126,
+  // playerSpriteWidth: 129,
   playerSpeed: 300,
   playerStartWidth: 32,
   itemMinHeight: 191,
   itemMaxHeight:200,
   itemMaxWidth: 800,
   actionTimer: 500,
-  levelbaseTime: 3000,
-  oldLevel: 2,
-  currentLevel: 2,
+  levelbaseTime: 7000,
+  oldLevel: 0,
+  currentLevel: 0,
+  itemsToGenerate: 1
 };
 
 var players = [
   {
     spriteName: 'player0',
-    spriteURL: 'assets/player12.png',
+    spriteURL: 'assets/playerSprites/player1_evenMoreActions6.png',
     upCommand: Phaser.Keyboard.I,
     downCommand: Phaser.Keyboard.K,
     leftCommand: Phaser.Keyboard.J,
@@ -29,7 +31,7 @@ var players = [
   },
   {
     spriteName: 'player1',
-    spriteURL: 'assets/player2.png',
+    spriteURL: 'assets/playerSprites/player3_evenMoreActions1.png',
     upCommand: Phaser.Keyboard.W,
     downCommand: Phaser.Keyboard.S,
     leftCommand: Phaser.Keyboard.A,
@@ -42,53 +44,103 @@ var players = [
 ];
 
 var fontAssets = {
-  actionFontStyle: {font: '32px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  actionFontStyle: {font: '32px "Fredoka One"', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
   actionTextWidth: 16,
   actionTextHeight: gameProperties.screenHeight - 50,
-  scoreTextWidthLeft: gameProperties.screenWidth * 0.02,
-  scoreTextWidthRight: gameProperties.screenWidth * 0.80,
+  scoreTextWidthLeft: gameProperties.screenWidth * 0.01,
+  scoreTextWidthRight: gameProperties.screenWidth * 0.72,
   scoreTextHeight: gameProperties.screenHeight * 0.02,
-  scoreFontStyle: {font: '20px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
-  pointsFontStyle: {font: '30px Arial', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  scoreFontStyle: {font: '25px "Fredoka One"', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  scoreFontStyleP1: {font: '25px "Fredoka One"', fill: '#33cc33'},
+  scoreFontStyleP2: {font: '25px "Fredoka One"', fill: '#cc3399'},
+  pointsFontStyle: [
+    {font: '30px "Fredoka One"', fill: '#33cc33', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+    {font: '30px "Fredoka One"', fill: '#cc3399', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+  ],
 };
 
 var actionText, playerZeroText, playerOneText;
 var playersGroup, textGroup;
-var sinks, showers;
+var sinks, showers, skunks, rocks, chalkboards, microphones;
 var cursors;
 var actionListeners;
 var itemsInPlay, totalItemsGenerated;
 
 var levels = [
   {
-    levelName: 'bathroom',
-    levelURL: 'assets/bathroom1.png',
-    enabledActions: [0],
+    levelName: '0',
+    levelURL: 'assets/backgrounds/br_day.png',
+    enabledActions: [],
   },
   {
-    levelName: 'bathroom2',
-    levelURL: 'assets/bathroom1.png',
-    enabledActions: [1],
+    levelName: '1',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0], //teeth
   },
   {
-    levelName: 'road',
-    levelURL: 'assets/road.png',
-    enabledActions: [0,1],
+    levelName: '2',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [1], //shower
   },
   {
-    levelName: 'outsideSchool',
-    levelURL: 'assets/school.png',
-    enabledActions: [0,1],
-  }
+    levelName: '3',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [3], //brandish
+  },
+  {
+    levelName: '4',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [2], //fart
+  },
+  {
+    levelName: '5',
+    levelURL: 'assets/backgrounds/school.png',
+    enabledActions: [2,3], //bat
+  },
+  {
+    levelName: '6',
+    levelURL: 'assets/backgrounds/classroom1.png',
+    enabledActions: [4], //answer
+  },
+  {
+    levelName: '7',
+    levelURL: 'assets/backgrounds/hallway1.png',
+    enabledActions: [5], //rockout
+  },
+  {
+    levelName: '8',
+    levelURL: 'assets/backgrounds/classroom1.png',
+    enabledActions: [4], //answer
+  },
+  {
+    levelName: '9',
+    levelURL: 'assets/backgrounds/school.png',
+    enabledActions: [5,3], //bat
+  },
+  {
+    levelName: '10',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [0,3,5], //all + punch
+  },
+  {
+    levelName: '11',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0,1,4,2], //all
+  },
+  {
+    levelName: '12',
+    levelURL: 'assets/backgrounds/br_night.png',
+    enabledActions: [], //sleep
+  },
 ];
 
 var actions = [
   {
     action: "BRUSH TEETH",
-    command: [Phaser.Keyboard.N, Phaser.Keyboard.Z],
-    commandKey: ["[N]", "[Z]"],
+    command: [Phaser.Keyboard.P, Phaser.Keyboard.ONE],
+    commandKey: ["[P]", "[1]"],
     imageName: 'sink',
-    imageURL: 'assets/sink2.png',
+    imageURL: 'assets/items/sink2.png',
     group: sinks,
     animationName: 'brushTeeth',
     animationFrames: [5,6],
@@ -96,15 +148,59 @@ var actions = [
   },
   {
     action: "GET NAKED",
-    command: [Phaser.Keyboard.M, Phaser.Keyboard.X],
-    commandKey: ["[M]", "[X]"],
+    command: [Phaser.Keyboard.O, Phaser.Keyboard.TWO],
+    commandKey: ["[O]", "[2]"],
     imageName: 'shower',
-    imageURL: 'assets/shower3.png',
+    imageURL: 'assets/items/shower3.png',
     group: showers,
     animationName: 'shower',
     animationFrames: [7,8],
     points: 400,
-  }
+  },
+  {
+    action: "FART",
+    command: [Phaser.Keyboard.ZERO, Phaser.Keyboard.THREE],
+    commandKey: ["[0]", "[3]"],
+    imageName: 'skunk',
+    imageURL: 'assets/items/skunk.png',
+    group: skunks,
+    animationName: 'fart',
+    animationFrames: [9,10,11],
+    points: 800,
+  },
+  {
+    action: "BRANDISH",
+    command: [Phaser.Keyboard.NINE, Phaser.Keyboard.FOUR],
+    commandKey: ["[9]", "[4]"],
+    imageName: 'rock',
+    imageURL: 'assets/items/sword.png',
+    group: rocks,
+    animationName: 'brandish',
+    animationFrames: [12,13],
+    points: 800,
+  },
+  {
+    action: "ANSWER",
+    command: [Phaser.Keyboard.EIGHT, Phaser.Keyboard.FIVE],
+    commandKey: ["[8]", "[5]"],
+    imageName: 'chalkboard',
+    imageURL: 'assets/items/chalkboard.png',
+    group: chalkboards,
+    animationName: 'answer',
+    animationFrames: [14,15,16],
+    points: 800,
+  },
+  {
+    action: "ROCK OUT",
+    command: [Phaser.Keyboard.SEVEN, Phaser.Keyboard.SIX],
+    commandKey: ["[7]", "[6]"],
+    imageName: 'microphone',
+    imageURL: 'assets/items/microphone.png',
+    group: microphones,
+    animationName: 'rockOut',
+    animationFrames: [18,19],
+    points: 800,
+  },
 ];
 
 var mainState = function(game) {
@@ -133,8 +229,6 @@ mainState.prototype = {
   },
 
   preload: function() {
-    gameProperties.currentLevel = 2;
-    gameProperties.oldLevel = 2;
     itemsInPlay = 0;
     totalItemsGenerated = 0;
 
@@ -151,8 +245,6 @@ mainState.prototype = {
 
     this.initKeyboard();
     this.startLevelTimer();
-
-    this.initButtons();
   },
 
   update: function() {
@@ -172,8 +264,21 @@ mainState.prototype = {
     var actionPoints = actions[actionIndex].points;
     var playersIndex = player.key.split("player")[1];
     var actionKey = players[playersIndex].actionListeners[actionIndex];
+
     if(actionKey.isDown && actionKey.duration == gameProperties.actionTimer){
-      item.kill();
+      var playerWidth = player.position.x;
+      var fadeDirection;
+      if(playerWidth < gameProperties.screenWidth/2){
+        fadeDirection = 0;
+      } else {
+        fadeDirection = gameProperties.screenWidth;
+      }
+
+      var fadeAway = game.add.tween(item).to({x: fadeDirection}, 800, Phaser.Easing.Linear.None, true);
+      fadeAway.chain(game.add.tween(item).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true));
+      fadeAway.onComplete.addOnce(item.kill, this);
+      fadeAway.start();
+
       itemsInPlay--;
       players[playersIndex].score += actionPoints;
       this.showPoints(player, actionPoints);
@@ -182,9 +287,11 @@ mainState.prototype = {
   },
 
   showPoints: function(player, actionPoints) {
+    var playersIndex = player.key.split("player")[1];
     var width = player.position.x;
     var height = player.position.y -20;
-    var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle);
+    var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle[playersIndex]);
+    points.setShadow(3, 3, 'rgba(0,0,0,1.0)', 0);
     game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);
     game.add.tween(points).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true);
   },
@@ -207,16 +314,33 @@ mainState.prototype = {
         playersGroup.children[i].body.velocity.y = -gameProperties.playerSpeed;
         this.moveUpAndDown(playersGroup.children[i]);
       }
+      //TODO: genericize this
       else if(players[i].actionListeners[0].isDown){
-        playersGroup.children[i].animations.play('brushTeeth');
+        playersGroup.children[i].animations.play(actions[0].animationName);
       } else if(players[i].actionListeners[1].isDown){
-        playersGroup.children[i].animations.play('shower');
+        playersGroup.children[i].animations.play(actions[1].animationName);
+      } else if(players[i].actionListeners[2].isDown){
+        playersGroup.children[i].animations.play(actions[2].animationName);
+      } else if(players[i].actionListeners[3].isDown){
+        playersGroup.children[i].animations.play(actions[3].animationName);
+      } else if(players[i].actionListeners[4].isDown){
+        playersGroup.children[i].animations.play(actions[4].animationName);
+      } else if(players[i].actionListeners[5].isDown){
+        playersGroup.children[i].animations.play(actions[5].animationName);
       }
       else {
         playersGroup.children[i].animations.stop();
         playersGroup.children[i].body.velocity.y = 0;
         playersGroup.children[i].frame = 2;
       }
+
+      // for(var actionIndex = 0; actionIndex < actions.length; actionIndex++){
+      //   if(players[i].actionListeners[actionIndex].isDown){
+      //     playersGroup.children[i].animations.play(actions[0].animationName);
+      //   }
+      // }
+
+
     }
   },
 
@@ -306,8 +430,10 @@ mainState.prototype = {
     actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
     $("#level").text("Level: " + gameProperties.currentLevel);
 
-    playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyle);
-    playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 000000", fontAssets.scoreFontStyle);
+    playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyleP1);
+    playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 000000", fontAssets.scoreFontStyleP2);
+    playerZeroText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
+    playerOneText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
 
     textGroup = game.add.group();
     textGroup.add(actionText);
@@ -335,7 +461,7 @@ mainState.prototype = {
       actions[index].group.enableBody = true;
 
       //create group items
-      for(var y = 0; y < 3; y++){
+      for(var y = 0; y < gameProperties.itemsToGenerate; y++){
         var item = actions[index].group.getFirstExists(false);
         if(item){
           item.revive();
@@ -360,18 +486,6 @@ mainState.prototype = {
       gameProperties.currentLevel++;
     }
   },
-
-  // initButtons: function() {
-  //   $("#level0").click(function() {
-  //     gameProperties.currentLevel = 0;
-  //   });
-  //   $("#level1").click(function() {
-  //     gameProperties.currentLevel = 1;
-  //   });
-  //   $("#level2").click(function() {
-  //     gameProperties.currentLevel = 2;
-  //   });
-  // },
 
   calculateLevelTime: function() {
     levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimer);
@@ -402,7 +516,9 @@ mainState.prototype = {
       this.calculateLevelTime();
       this.startLevelTimer();
       //bring players to top
-      for(var actionIndex = 0; actionIndex < actions.length; actionIndex++){
+      var enabledActions = levels[gameProperties.currentLevel].enabledActions;
+      for(var i = 0; i < enabledActions.length; i++){
+        var actionIndex = enabledActions[i];
         game.world.bringToTop(actions[actionIndex].group);
       }
       game.world.bringToTop(textGroup);
@@ -411,8 +527,8 @@ mainState.prototype = {
   },
 
   render: function() {
-    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
-    + "\nItems Generated: " + totalItemsGenerated, 32, 32);
+    // game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
+    // + "\nItems Generated: " + totalItemsGenerated, 32, 32);
   },
 
 };
