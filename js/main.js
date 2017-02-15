@@ -15,17 +15,16 @@ function randomizePlayerActions(playerIndex){
 // initialize buttons
 function displayPlayerControllers() {
   for(var player = 0; player < players.length; player++){
-    var controllerDiv = $("#" + players[player].spriteName);
-    for(var action = 0; action < actions.length; action++){
-        var newButton = $('<button/>',
-        {
-          "class": actions[action].color + " controllerButton",
-          "id": actions[action].command[player],
-          text: actions[action].command[player],
-        });
-        controllerDiv.append(newButton);
-    }
+    $("#" + players[player].spriteName + " .controllerButton").each(function(i) {
+      $(this).addClass(actions[i].color);
+      $(this).attr('id', actions[i].command[player]);
+      // $(this).text(actions[i].command[player]);
+    });
+    //show scoreImages
+    $("#" + players[player].spriteName + " img").attr("src", players[player].scoreImg);
   }
+
+
 }
 
 function shuffleArray(arr){
@@ -65,4 +64,8 @@ function updateActionText(text, color){
   $("#actionText span").text(text);
   $("#actionTextButton").removeClass();
   $("#actionTextButton").addClass(color + " controllerButton");
+}
+
+function updatePoints(playerIndex, score){
+  $("#" + players[playerIndex].spriteName + " .score").text(score);
 }

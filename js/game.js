@@ -12,13 +12,14 @@ var gameProperties = {
   levelbaseTime: 7000,
   oldLevel: 0,
   currentLevel: 0,
-  itemsToGenerate: 0
+  itemsToGenerate: 1
 };
 
 var players = [
   {
     spriteName: 'player0',
     spriteURL: 'assets/playerSprites/player3_evenMoreActions1.png',
+    scoreImg: 'assets/playerSprites/player2.png',
     upCommand: Phaser.Keyboard.W,
     downCommand: Phaser.Keyboard.S,
     leftCommand: Phaser.Keyboard.A,
@@ -32,6 +33,7 @@ var players = [
   {
     spriteName: 'player1',
     spriteURL: 'assets/playerSprites/player1_evenMoreActions6.png',
+    scoreImg: 'assets/playerSprites/player1.png',
     upCommand: Phaser.Keyboard.I,
     downCommand: Phaser.Keyboard.K,
     leftCommand: Phaser.Keyboard.J,
@@ -61,7 +63,6 @@ var fontAssets = {
   ],
 };
 
-// var actionText;
 var playerZeroText, playerOneText;
 var playersGroup, textGroup;
 var sinks, showers, skunks, rocks, chalkboards, microphones;
@@ -140,8 +141,7 @@ var levels = [
 var actions = [
   {
     action: "BRUSH TEETH",
-    command: [Phaser.Keyboard.ONE, Phaser.Keyboard.P],
-    // commandKey: ["1", "P"],
+    command: [Phaser.Keyboard.ONE, Phaser.Keyboard.SEVEN],
     imageName: 'sink',
     imageURL: 'assets/items/sink2.png',
     group: sinks,
@@ -152,8 +152,7 @@ var actions = [
   },
   {
     action: "GET NAKED",
-    command: [Phaser.Keyboard.TWO, Phaser.Keyboard.O],
-    // commandKey: ["2", "O"],
+    command: [Phaser.Keyboard.TWO, Phaser.Keyboard.EIGHT],
     imageName: 'shower',
     imageURL: 'assets/items/shower3.png',
     group: showers,
@@ -164,8 +163,7 @@ var actions = [
   },
   {
     action: "FART",
-    command: [Phaser.Keyboard.THREE, Phaser.Keyboard.ZERO],
-    // commandKey: ["3", "0"],
+    command: [Phaser.Keyboard.THREE, Phaser.Keyboard.NINE],
     imageName: 'skunk',
     imageURL: 'assets/items/skunk.png',
     group: skunks,
@@ -176,8 +174,7 @@ var actions = [
   },
   {
     action: "BRANDISH",
-    command: [Phaser.Keyboard.FOUR, Phaser.Keyboard.NINE],
-    // commandKey: ["4", "9"],
+    command: [Phaser.Keyboard.FOUR, Phaser.Keyboard.ZERO],
     imageName: 'rock',
     imageURL: 'assets/items/sword.png',
     group: rocks,
@@ -188,8 +185,7 @@ var actions = [
   },
   {
     action: "ANSWER",
-    command: [Phaser.Keyboard.FIVE, Phaser.Keyboard.EIGHT],
-    // commandKey: ["5", "8"],
+    command: [Phaser.Keyboard.Q, Phaser.Keyboard.U],
     imageName: 'chalkboard',
     imageURL: 'assets/items/chalkboard.png',
     group: chalkboards,
@@ -200,8 +196,7 @@ var actions = [
   },
   {
     action: "ROCK OUT",
-    command: [Phaser.Keyboard.SIX, Phaser.Keyboard.SEVEN],
-    // commandKey: ["6", "7"],
+    command: [Phaser.Keyboard.E, Phaser.Keyboard.O],
     imageName: 'microphone',
     imageURL: 'assets/items/microphone.png',
     group: microphones,
@@ -353,14 +348,6 @@ mainState.prototype = {
         playersGroup.children[i].body.velocity.y = 0;
         playersGroup.children[i].frame = 2;
       }
-
-      // for(var actionIndex = 0; actionIndex < actions.length; actionIndex++){
-      //   if(players[i].actionListeners[actionIndex].isDown){
-      //     playersGroup.children[i].animations.play(actions[0].animationName);
-      //   }
-      // }
-
-
     }
   },
 
@@ -455,16 +442,12 @@ mainState.prototype = {
   },
 
   initText: function() {
-    // actionText = game.add.text(fontAssets.actionTextWidth, fontAssets.actionTextHeight, "LETS GO!", fontAssets.actionFontStyle);
-    // $("#level").text("Level: " + gameProperties.currentLevel);
-
     playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyleP1);
     playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 000000", fontAssets.scoreFontStyleP2);
     playerZeroText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
     playerOneText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
 
     textGroup = game.add.group();
-    // textGroup.add(actionText);
     textGroup.add(playerZeroText);
     textGroup.add(playerOneText);
   },
@@ -474,6 +457,8 @@ mainState.prototype = {
     var p2 = "00000" + players[1].score;
     playerZeroText.text = "Player 1: " + p1.substr(p1.length - 6);
     playerOneText.text = "Player 2: " + p2.substr(p2.length - 6);
+    updatePoints(0, p1.substr(p1.length - 6));
+    updatePoints(1, p2.substr(p1.length - 6));
   },
 
   initBackground: function() {
@@ -511,12 +496,10 @@ mainState.prototype = {
             totalItemsGenerated++;
         }
       }
-      // text = actions[index].command+ " NEW ACTION: " + actions[index].action + "!";
       text = " NEW ACTION: " + actions[index].action + "!";
       color = actions[index].color;
     }
     updateActionText(text, color);
-    // actionText.text = text;
   },
 
   goToNextLevel: function(){
