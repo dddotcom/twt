@@ -13,7 +13,7 @@ var gameProperties = {
   levelbaseTime: 7000,
   oldLevel: 0,
   currentLevel: 0,
-  itemsToGenerate: 0
+  itemsToGenerate: 1
 };
 
 var players = [
@@ -31,7 +31,7 @@ var players = [
   },
   {
     spriteName: 'player1',
-    spriteURL: 'assets/playerSprites/player2_moreActions3.png',
+    spriteURL: 'assets/playerSprites/player3_evenMoreActions1.png',
     upCommand: Phaser.Keyboard.W,
     downCommand: Phaser.Keyboard.S,
     leftCommand: Phaser.Keyboard.A,
@@ -69,76 +69,76 @@ var itemsInPlay, totalItemsGenerated;
 var levels = [
   {
     levelName: '0',
-    levelURL: 'assets/backgrounds/hallway1.png',
-    enabledActions: [0,1,2,3,4,5],
+    levelURL: 'assets/backgrounds/br_day.png',
+    enabledActions: [],
   },
-  // {
-  //   levelName: '1',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [3,4,5], //teeth
-  // },
-  // {
-  //   levelName: '2',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [3,4,5], //shower
-  // },
-  // {
-  //   levelName: '3',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [3,4,5], //brandish
-  // },
-  // {
-  //   levelName: '4',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [2], //fart
-  // },
-  // {
-  //   levelName: '5',
-  //   levelURL: 'assets/backgrounds/school.png',
-  //   enabledActions: [], //bat
-  // },
-  // {
-  //   levelName: '6',
-  //   levelURL: 'assets/backgrounds/classroom1.png',
-  //   enabledActions: [], //answer
-  // },
-  // {
-  //   levelName: '7',
-  //   levelURL: 'assets/backgrounds/hallway1.png',
-  //   enabledActions: [], //rockout
-  // },
-  // {
-  //   levelName: '8',
-  //   levelURL: 'assets/backgrounds/classroom1.png',
-  //   enabledActions: [], //answer
-  // },
-  // {
-  //   levelName: '9',
-  //   levelURL: 'assets/backgrounds/school.png',
-  //   enabledActions: [], //bat
-  // },
-  // {
-  //   levelName: '10',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [0,1,2], //all + punch
-  // },
-  // {
-  //   levelName: '11',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [0,1,2], //all
-  // },
-  // {
-  //   levelName: '12',
-  //   levelURL: 'assets/backgrounds/br_night.png',
-  //   enabledActions: [], //sleep
-  // },
+  {
+    levelName: '1',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0], //teeth
+  },
+  {
+    levelName: '2',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [1], //shower
+  },
+  {
+    levelName: '3',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [3], //brandish
+  },
+  {
+    levelName: '4',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [2], //fart
+  },
+  {
+    levelName: '5',
+    levelURL: 'assets/backgrounds/school.png',
+    enabledActions: [2,3], //bat
+  },
+  {
+    levelName: '6',
+    levelURL: 'assets/backgrounds/classroom1.png',
+    enabledActions: [4], //answer
+  },
+  {
+    levelName: '7',
+    levelURL: 'assets/backgrounds/hallway1.png',
+    enabledActions: [5], //rockout
+  },
+  {
+    levelName: '8',
+    levelURL: 'assets/backgrounds/classroom1.png',
+    enabledActions: [4], //answer
+  },
+  {
+    levelName: '9',
+    levelURL: 'assets/backgrounds/school.png',
+    enabledActions: [5,3], //bat
+  },
+  {
+    levelName: '10',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [0,3,5], //all + punch
+  },
+  {
+    levelName: '11',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0,1,4,2], //all
+  },
+  {
+    levelName: '12',
+    levelURL: 'assets/backgrounds/br_night.png',
+    enabledActions: [], //sleep
+  },
 ];
 
 var actions = [
   {
     action: "BRUSH TEETH",
-    command: [Phaser.Keyboard.N, Phaser.Keyboard.Z],
-    commandKey: ["[N]", "[Z]"],
+    command: [Phaser.Keyboard.P, Phaser.Keyboard.ONE],
+    commandKey: ["[P]", "[1]"],
     imageName: 'sink',
     imageURL: 'assets/items/sink2.png',
     group: sinks,
@@ -148,8 +148,8 @@ var actions = [
   },
   {
     action: "GET NAKED",
-    command: [Phaser.Keyboard.M, Phaser.Keyboard.X],
-    commandKey: ["[M]", "[X]"],
+    command: [Phaser.Keyboard.O, Phaser.Keyboard.TWO],
+    commandKey: ["[O]", "[2]"],
     imageName: 'shower',
     imageURL: 'assets/items/shower3.png',
     group: showers,
@@ -159,8 +159,8 @@ var actions = [
   },
   {
     action: "FART",
-    command: [Phaser.Keyboard.B, Phaser.Keyboard.C],
-    commandKey: ["[B]", "[C]"],
+    command: [Phaser.Keyboard.ZERO, Phaser.Keyboard.THREE],
+    commandKey: ["[0]", "[3]"],
     imageName: 'skunk',
     imageURL: 'assets/items/skunk.png',
     group: skunks,
@@ -170,8 +170,8 @@ var actions = [
   },
   {
     action: "BRANDISH",
-    command: [Phaser.Keyboard.ZERO, Phaser.Keyboard.ONE],
-    commandKey: ["[0]", "[1]"],
+    command: [Phaser.Keyboard.NINE, Phaser.Keyboard.FOUR],
+    commandKey: ["[9]", "[4]"],
     imageName: 'rock',
     imageURL: 'assets/items/sword.png',
     group: rocks,
@@ -181,8 +181,8 @@ var actions = [
   },
   {
     action: "ANSWER",
-    command: [Phaser.Keyboard.NINE, Phaser.Keyboard.TWO],
-    commandKey: ["[9]", "[2]"],
+    command: [Phaser.Keyboard.EIGHT, Phaser.Keyboard.FIVE],
+    commandKey: ["[8]", "[5]"],
     imageName: 'chalkboard',
     imageURL: 'assets/items/chalkboard.png',
     group: chalkboards,
@@ -192,8 +192,8 @@ var actions = [
   },
   {
     action: "ROCK OUT",
-    command: [Phaser.Keyboard.EIGHT, Phaser.Keyboard.THREE],
-    commandKey: ["[8]", "[3]"],
+    command: [Phaser.Keyboard.SEVEN, Phaser.Keyboard.SIX],
+    commandKey: ["[7]", "[6]"],
     imageName: 'microphone',
     imageURL: 'assets/items/microphone.png',
     group: microphones,
