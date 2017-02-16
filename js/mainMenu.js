@@ -5,13 +5,11 @@ menu.prototype = {
   create: function() {
     //start game text
     game.add.sprite(0,0, gameProperties.titleName);
+    this.enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
   },
   update: function() {
-    this.game.input.keyboard.onDownCallback = function(e) {
-      keyPressCount++;
-      if(keyPressCount >= 5){
-        this.game.state.start('state3');
-      }
+    if(this.enterKey.isDown) {
+      this.game.state.start('state2');
     }
   }
 };

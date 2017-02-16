@@ -17,11 +17,10 @@ canvas {
 #actionText {
   margin: 0px auto;
   padding: 5px 5px 10px 5px;
-  /*background-color: rgb(128,128,128);*/
   color: white;
   width: auto;
   border-radius: 15px;
-  font-size: 2em;
+  font-size: 1.5em;
 }
 
 #player0 .score{
@@ -33,31 +32,43 @@ canvas {
 }
 
 .score {
-  font-size: 1.5em;
+  font-size: 2.5em;
   letter-spacing: 2px;
   margin: 5px auto;
 }
 
 .controllerButton {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   font-size: 1em;
   color: white;
   background-color: #6496c8;
   border: none;
-  border-radius: 30px;
+  border-radius: 25px;
   box-shadow: 0 10px #27496d;
   font-family: 'Fredoka One', cursive;
+  margin: 1px;
 }
 
 .keyboardButton {
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   background-color: black;
-  border-radius: 15px;
+  border-radius: 10px;
   border: solid 2px silver;
   color: white;
-  font-size: 1em;
+  font-size: 0.8em;
+  margin: 1px;
+}
+
+.notUsed {
+  background-color: transparent;
+}
+
+.keyboardButton.hover {
+  background-color: rgba(255,215,0,0.3);
+  color: gold;
+  border: solid 2px gold;
 }
 
 .tabKey {
@@ -67,10 +78,11 @@ canvas {
 .playerController {
   background-color: gray;
   height: 100%;
-  padding: 10px 10px 20px 10px;
-  margin: 10px auto 20px auto;
+  padding: 5px 10px 10px 10px;
+  margin: 0 10px;
   border-radius: 30px;
   box-shadow: 0 10px #27496d;
+  width: 25%;
 }
 
 .blue {

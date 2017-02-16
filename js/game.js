@@ -65,6 +65,7 @@ mainState.prototype = {
 
   removeHover: function(playerControllerId) {
     $("#" + playerControllerId + " .controllerButton").removeClass("hover");
+    $("#" + playerControllerId + " .keyboardButton").removeClass("hover");
   },
 
   movePlayers: function() {
@@ -73,16 +74,20 @@ mainState.prototype = {
       if(players[i].commandListeners[2].isDown){
         playersGroup.children[i].body.velocity.x = -gameProperties.playerSpeed;
         playersGroup.children[i].animations.play('left');
+        $("#" + players[i].leftCommand).addClass("hover");
         lastDirection = 'left';
       } else if(players[i].commandListeners[3].isDown){
         playersGroup.children[i].body.velocity.x = gameProperties.playerSpeed;
         playersGroup.children[i].animations.play('right');
+        $("#" + players[i].rightCommand).addClass("hover");
         lastDirection = 'right';
       } else if(players[i].commandListeners[1].isDown){
         playersGroup.children[i].body.velocity.y = gameProperties.playerSpeed;
+        $("#" + players[i].downCommand).addClass("hover");
         this.moveUpAndDown(playersGroup.children[i]);
       } else if(players[i].commandListeners[0].isDown){
         playersGroup.children[i].body.velocity.y = -gameProperties.playerSpeed;
+        $("#" + players[i].upCommand).addClass("hover");
         this.moveUpAndDown(playersGroup.children[i]);
       }
       //TODO: genericize this
@@ -182,7 +187,6 @@ mainState.prototype = {
   },
 
   enableRelevantActions: function() {
-    // this.disableAllActions();
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
@@ -204,22 +208,9 @@ mainState.prototype = {
     game.physics.startSystem(Phaser.Physics.ARCADE);
   },
 
-  initText: function() {
-    playerZeroText = game.add.text(fontAssets.scoreTextWidthLeft, fontAssets.scoreTextHeight, "Player 1: 000000", fontAssets.scoreFontStyleP1);
-    playerOneText = game.add.text(fontAssets.scoreTextWidthRight, fontAssets.scoreTextHeight, "Player 2: 000000", fontAssets.scoreFontStyleP2);
-    playerZeroText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
-    playerOneText.setShadow(3, 3, 'rgba(0,0,0,0.5)', 0);
-
-    textGroup = game.add.group();
-    textGroup.add(playerZeroText);
-    textGroup.add(playerOneText);
-  },
-
   updateScore: function() {
     var p1 = "00000" + players[0].score;
     var p2 = "00000" + players[1].score;
-    playerZeroText.text = "Player 1: " + p1.substr(p1.length - 6);
-    playerOneText.text = "Player 2: " + p2.substr(p2.length - 6);
     updatePoints(0, p1.substr(p1.length - 6));
     updatePoints(1, p2.substr(p2.length - 6));
   },
@@ -233,7 +224,6 @@ mainState.prototype = {
     var text;
     var color;
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
-    console.log("enabled actions = " + enabledActions);
     if(enabledActions.length === 0){
       text = "";
       color = "";
@@ -313,7 +303,6 @@ mainState.prototype = {
         var actionIndex = enabledActions[i];
         game.world.bringToTop(actions[actionIndex].group);
       }
-      game.world.bringToTop(textGroup);
       game.world.bringToTop(playersGroup);
     }
   },
