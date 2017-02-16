@@ -1,5 +1,5 @@
 body {
-  /*background-color: black;*/
+  background-color: black;
   text-align: center;
   font-family: 'Fredoka One', cursive;
 }
@@ -17,9 +17,9 @@ canvas {
 #actionText {
   margin: 0px auto;
   padding: 5px 5px 10px 5px;
-  background-color: rgba(0,0,0,0.6);
+  /*background-color: rgb(128,128,128);*/
   color: white;
-  width: 50%;
+  width: auto;
   border-radius: 15px;
   font-size: 2em;
 }

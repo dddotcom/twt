@@ -1,8 +1,14 @@
+var game = new Phaser.Game(gameProperties.screenWidth, gameProperties.screenHeight, Phaser.AUTO, 'gameDiv');
+game.state.add('state0', preload);
+game.state.add('state1', menu);
+game.state.add('state2', mainState);
+game.state.add('state3', gameOver);
+game.state.start('state0');
+
 $(document).ready( function() {
   console.log("DOM Loaded");
 
   displayPlayerControllers();
-
 });
 
 function randomizePlayerActions(playerIndex){
@@ -23,8 +29,6 @@ function displayPlayerControllers() {
     //show scoreImages
     $("#" + players[player].spriteName + " img").attr("src", players[player].scoreImg);
   }
-
-
 }
 
 function shuffleArray(arr){
