@@ -13,7 +13,7 @@ var gameProperties = {
   levelbaseTime: 10000,
   oldLevel: 0,
   currentLevel: 0,
-  itemsToGenerate: 3,
+  itemsToGenerate: 1,
   titleName: 'title',
   titleURL: 'assets/backgrounds/title.png',
 };
@@ -68,33 +68,33 @@ var levels = [
   {
     levelName: '0',
     levelURL: 'assets/backgrounds/br_day.png',
-    enabledActions: [0,1],
+    enabledActions: [],
   },
-  // {
-  //   levelName: '1',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [1,2], //teeth
-  // },
-  // {
-  //   levelName: '2',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [1], //shower
-  // },
-  // {
-  //   levelName: '3',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [2], //fart
-  // },
-  // {
-  //   levelName: '4',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [3], //brandish
-  // },
-  // {
-  //   levelName: '5',
-  //   levelURL: 'assets/backgrounds/school.png',
-  //   enabledActions: [2,3], //bat
-  // },
+  {
+    levelName: '1',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0], //teeth
+  },
+  {
+    levelName: '2',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [1], //shower
+  },
+  {
+    levelName: '3',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [2], //fart
+  },
+  {
+    levelName: '4',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [3], //brandish
+  },
+  {
+    levelName: '5',
+    levelURL: 'assets/backgrounds/school.png',
+    enabledActions: [2,3], //bat
+  },
   // {
   //   levelName: '6',
   //   levelURL: 'assets/backgrounds/classroom1.png',

@@ -21,6 +21,15 @@ mainState.prototype = {
       game.physics.arcade.overlap(playersGroup.children[y], allItems, this.collideWithItem, null, this);
     }
     this.updateScore();
+    this.leaveLevelEarly();
+  },
+
+  leaveLevelEarly: function() {
+    //if all items have been killed
+    if(itemsInPlay.length === 0){
+      game.time.events.remove(gameProperties.levelTimer);
+      this.goToNextLevel()
+    }
   },
 
   removeOverlap: function(item, allItems) {
@@ -298,7 +307,7 @@ mainState.prototype = {
   },
 
   startLevelTimer: function() {
-    game.time.events.add(levelTime, this.goToNextLevel, this);
+    gameProperties.levelTimer = game.time.events.add(levelTime, this.goToNextLevel, this);
   },
 
   updateBackground: function() {
