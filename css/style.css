@@ -40,13 +40,12 @@ canvas {
 .controllerButton {
   width: 40px;
   height: 40px;
-  font-size: 1em;
+  font-size: 0.8em;
   color: white;
   background-color: #6496c8;
   border: none;
   border-radius: 25px;
   box-shadow: 0 10px #27496d;
-  font-family: 'Fredoka One', cursive;
   margin: 1px;
 }
 

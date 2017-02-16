@@ -9,7 +9,7 @@ var gameProperties = {
   itemMaxHeight:200,
   itemMaxWidth: 800,
   actionTimer: 500,
-  levelbaseTime: 7000,
+  levelbaseTime: 10000,
   oldLevel: 0,
   currentLevel: 0,
   itemsToGenerate: 1,
@@ -66,68 +66,68 @@ var levels = [
   {
     levelName: '0',
     levelURL: 'assets/backgrounds/br_day.png',
-    enabledActions: [],
+    enabledActions: [0,1,2,3,4,5],
   },
-  {
-    levelName: '1',
-    levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [0], //teeth
-  },
-  {
-    levelName: '2',
-    levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [1], //shower
-  },
-  {
-    levelName: '3',
-    levelURL: 'assets/backgrounds/road.png',
-    enabledActions: [3], //brandish
-  },
-  {
-    levelName: '4',
-    levelURL: 'assets/backgrounds/road.png',
-    enabledActions: [2], //fart
-  },
-  {
-    levelName: '5',
-    levelURL: 'assets/backgrounds/school.png',
-    enabledActions: [2,3], //bat
-  },
-  {
-    levelName: '6',
-    levelURL: 'assets/backgrounds/classroom1.png',
-    enabledActions: [4], //answer
-  },
-  {
-    levelName: '7',
-    levelURL: 'assets/backgrounds/hallway1.png',
-    enabledActions: [5], //rockout
-  },
-  {
-    levelName: '8',
-    levelURL: 'assets/backgrounds/classroom1.png',
-    enabledActions: [4], //answer
-  },
-  {
-    levelName: '9',
-    levelURL: 'assets/backgrounds/school.png',
-    enabledActions: [5,3], //bat
-  },
-  {
-    levelName: '10',
-    levelURL: 'assets/backgrounds/road.png',
-    enabledActions: [0,3,5], //all + punch
-  },
-  {
-    levelName: '11',
-    levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [0,1,4,2], //all
-  },
-  {
-    levelName: '12',
-    levelURL: 'assets/backgrounds/br_night.png',
-    enabledActions: [], //sleep
-  },
+  // {
+  //   levelName: '1',
+  //   levelURL: 'assets/backgrounds/bathroom1.png',
+  //   enabledActions: [0], //teeth
+  // },
+  // {
+  //   levelName: '2',
+  //   levelURL: 'assets/backgrounds/bathroom1.png',
+  //   enabledActions: [1], //shower
+  // },
+  // {
+  //   levelName: '3',
+  //   levelURL: 'assets/backgrounds/road.png',
+  //   enabledActions: [2], //fart
+  // },
+  // {
+  //   levelName: '4',
+  //   levelURL: 'assets/backgrounds/road.png',
+  //   enabledActions: [3], //brandish
+  // },
+  // {
+  //   levelName: '5',
+  //   levelURL: 'assets/backgrounds/school.png',
+  //   enabledActions: [2,3], //bat
+  // },
+  // {
+  //   levelName: '6',
+  //   levelURL: 'assets/backgrounds/classroom1.png',
+  //   enabledActions: [4], //answer
+  // },
+  // {
+  //   levelName: '7',
+  //   levelURL: 'assets/backgrounds/hallway1.png',
+  //   enabledActions: [5], //rockout
+  // },
+  // {
+  //   levelName: '8',
+  //   levelURL: 'assets/backgrounds/classroom1.png',
+  //   enabledActions: [4], //answer
+  // },
+  // {
+  //   levelName: '9',
+  //   levelURL: 'assets/backgrounds/school.png',
+  //   enabledActions: [5,3], //bat
+  // },
+  // {
+  //   levelName: '10',
+  //   levelURL: 'assets/backgrounds/road.png',
+  //   enabledActions: [0,3,5], //all + punch
+  // },
+  // {
+  //   levelName: '11',
+  //   levelURL: 'assets/backgrounds/bathroom1.png',
+  //   enabledActions: [0,1,4,2], //all
+  // },
+  // {
+  //   levelName: '12',
+  //   levelURL: 'assets/backgrounds/br_night.png',
+  //   enabledActions: [], //sleep
+  // },
 ];
 
 var actions = [
@@ -141,6 +141,7 @@ var actions = [
     animationFrames: [5,6],
     points: 800,
     color: 'blue',
+    audioURL: 'assets/audio/brush.m4a',
   },
   {
     action: "GET NAKED",
@@ -152,6 +153,7 @@ var actions = [
     animationFrames: [7,8],
     points: 400,
     color: 'green',
+    audioURL: 'assets/audio/shampoo.m4a',
   },
   {
     action: "FART",
@@ -162,7 +164,8 @@ var actions = [
     animationName: 'fart',
     animationFrames: [9,10,11],
     points: 800,
-    color: 'purple'
+    color: 'purple',
+    audioURL: 'assets/audio/fart.m4a',
   },
   {
     action: "BRANDISH",
@@ -174,6 +177,7 @@ var actions = [
     animationFrames: [12,13],
     points: 800,
     color: 'orange',
+    audioURL: 'assets/audio/brandish.m4a',
   },
   {
     action: "ANSWER",
@@ -185,6 +189,7 @@ var actions = [
     animationFrames: [14,15,16],
     points: 800,
     color: 'lavender',
+    audioURL: 'assets/audio/answer.m4a',
   },
   {
     action: "ROCK OUT",
@@ -196,5 +201,6 @@ var actions = [
     animationFrames: [18,19],
     points: 800,
     color: 'red',
+    audioURL: 'assets/audio/rockOut.m4a',
   },
 ];
