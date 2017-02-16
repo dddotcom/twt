@@ -9,21 +9,25 @@ mainState.prototype = {
     this.calculateLevelTime();
     this.initPlayers();
     this.initKeyboard();
-
-
-
     this.startLevelTimer();
   },
 
   update: function() {
     this.updateLevel();
     this.movePlayers();
-    game.physics.arcade.collide(allItems);
+    game.physics.arcade.overlap(allItems, allItems, this.removeOverlap, null, this);
 
     for(var y = 0; y < playersGroup.children.length; y++){
       game.physics.arcade.overlap(playersGroup.children[y], allItems, this.collideWithItem, null, this);
     }
     this.updateScore();
+  },
+
+  removeOverlap: function(item, allItems) {
+    var newWidth = Math.random() * gameProperties.itemMaxWidth + gameProperties.itemMinWidth;
+    var newHeight = Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight;
+    item.x = newWidth;
+    item.y = newHeight;
   },
 
   collideWithItem: function(player, item) {
@@ -266,13 +270,13 @@ mainState.prototype = {
       //create group items
       for(var y = 0; y < gameProperties.itemsToGenerate; y++){
         item = allItems.create(
-        Math.random() * gameProperties.itemMaxWidth,
+        Math.random() * gameProperties.itemMaxWidth + gameProperties.itemMinWidth,
         Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
         actions[index].imageName);
 
+        //  This adjusts the collision body size
+        item.body.setSize(item.body.halfWidth, item.body.halfHeight, item.body.halfWidth/2, item.body.halfHeight/2);
         game.physics.arcade.enable(item);
-        // item.body.velocity.setTo(200, 200);
-        item.body.bounce.set(1);
         item.body.collideWorldBounds = true;
         itemsInPlay.push(item);
         totalItemsGenerated++;
@@ -325,11 +329,6 @@ mainState.prototype = {
 
       //bring players to the top
       //TODO: FIX THIS BECAUSE ITEMS ARE BEING BURIED..
-      // var enabledActions = levels[gameProperties.currentLevel].enabledActions;
-      // for(var i = 0; i < enabledActions.length; i++){
-      //   var actionIndex = enabledActions[i];
-      //   // game.world.bringToTop(actions[actionIndex].group);
-      // }
       game.world.bringToTop(allItems);
       game.world.bringToTop(playersGroup);
     }
@@ -338,6 +337,10 @@ mainState.prototype = {
   render: function() {
     game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay.length
     + "\nItems Generated: " + totalItemsGenerated, 32, 32);
+    allItems.forEach(function(item){
+        game.debug.body(item);
+    })
+
   },
 
 };

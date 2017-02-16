@@ -5,9 +5,10 @@ var gameProperties = {
   playerSpriteWidth: 126,
   playerSpeed: 300,
   playerStartWidth: 32,
-  itemMinHeight: 191,
-  itemMaxHeight:200,
-  itemMaxWidth: 800,
+  itemMinHeight: 50,
+  itemMaxHeight: 500,
+  itemMaxWidth: 600,
+  itemMinWidth: 100,
   actionTimer: 500,
   levelbaseTime: 10000,
   oldLevel: 0,
@@ -67,13 +68,13 @@ var levels = [
   {
     levelName: '0',
     levelURL: 'assets/backgrounds/br_day.png',
-    enabledActions: [0],
+    enabledActions: [0,1],
   },
-  {
-    levelName: '1',
-    levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [1,2], //teeth
-  },
+  // {
+  //   levelName: '1',
+  //   levelURL: 'assets/backgrounds/bathroom1.png',
+  //   enabledActions: [1,2], //teeth
+  // },
   // {
   //   levelName: '2',
   //   levelURL: 'assets/backgrounds/bathroom1.png',

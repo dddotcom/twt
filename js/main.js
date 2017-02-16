@@ -34,7 +34,6 @@ function displayPlayerControllers() {
     $("#" + players[player].spriteName + " .controllerButton").each(function(i) {
       $(this).addClass(actions[i].color);
       $(this).attr('id', actions[i].command[player]);
-      // $(this).text(actions[i].command[player]);
     });
     //show scoreImages
     $("#" + players[player].spriteName + " img").attr("src", players[player].scoreImg);
