@@ -12,7 +12,7 @@ var gameProperties = {
   levelbaseTime: 10000,
   oldLevel: 0,
   currentLevel: 0,
-  itemsToGenerate: 1,
+  itemsToGenerate: 3,
   titleName: 'title',
   titleURL: 'assets/backgrounds/title.png',
 };
@@ -57,22 +57,23 @@ var fontAssets = {
 };
 
 var playersGroup, textGroup;
-var sinks, showers, skunks, rocks, chalkboards, microphones;
+var allItems;
 var cursors;
 var actionListeners;
-var itemsInPlay, totalItemsGenerated;
+var itemsInPlay = [];
+var totalItemsGenerated;
 
 var levels = [
   {
     levelName: '0',
     levelURL: 'assets/backgrounds/br_day.png',
-    enabledActions: [0,1,2,3,4,5],
+    enabledActions: [0],
   },
-  // {
-  //   levelName: '1',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [0], //teeth
-  // },
+  {
+    levelName: '1',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [1,2], //teeth
+  },
   // {
   //   levelName: '2',
   //   levelURL: 'assets/backgrounds/bathroom1.png',
@@ -136,7 +137,6 @@ var actions = [
     command: [Phaser.Keyboard.ONE, Phaser.Keyboard.SEVEN],
     imageName: 'sink',
     imageURL: 'assets/items/sink2.png',
-    group: sinks,
     animationName: 'brushTeeth',
     animationFrames: [5,6],
     points: 800,
@@ -148,7 +148,6 @@ var actions = [
     command: [Phaser.Keyboard.TWO, Phaser.Keyboard.EIGHT],
     imageName: 'shower',
     imageURL: 'assets/items/shower3.png',
-    group: showers,
     animationName: 'shower',
     animationFrames: [7,8],
     points: 400,
@@ -160,7 +159,6 @@ var actions = [
     command: [Phaser.Keyboard.THREE, Phaser.Keyboard.NINE],
     imageName: 'skunk',
     imageURL: 'assets/items/skunk.png',
-    group: skunks,
     animationName: 'fart',
     animationFrames: [9,10,11],
     points: 800,
@@ -172,7 +170,6 @@ var actions = [
     command: [Phaser.Keyboard.FOUR, Phaser.Keyboard.ZERO],
     imageName: 'rock',
     imageURL: 'assets/items/sword.png',
-    group: rocks,
     animationName: 'brandish',
     animationFrames: [12,13],
     points: 800,
@@ -184,7 +181,6 @@ var actions = [
     command: [Phaser.Keyboard.Q, Phaser.Keyboard.U],
     imageName: 'chalkboard',
     imageURL: 'assets/items/chalkboard.png',
-    group: chalkboards,
     animationName: 'answer',
     animationFrames: [14,15,16],
     points: 800,
@@ -196,7 +192,6 @@ var actions = [
     command: [Phaser.Keyboard.E, Phaser.Keyboard.O],
     imageName: 'microphone',
     imageURL: 'assets/items/microphone.png',
-    group: microphones,
     animationName: 'rockOut',
     animationFrames: [18,19],
     points: 800,

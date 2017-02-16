@@ -10,7 +10,7 @@ $(document).ready( function() {
 
   displayPlayerControllers();
   initializeAudio();
-  $("#success").get(0).play();
+  // $("#success").get(0).play();
 
   $("#pauseSound").click(function() {
     if($("#success").get(0).paused){

@@ -4,7 +4,7 @@ var preload = function(game){}
 preload.prototype = {
 
   preload: function() {
-    itemsInPlay = 0;
+    // itemsInPlay = 0;
     totalItemsGenerated = 0;
 
     this.loadAssets();

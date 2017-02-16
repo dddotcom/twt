@@ -8,18 +8,20 @@ mainState.prototype = {
     this.initGraphics();
     this.calculateLevelTime();
     this.initPlayers();
-
     this.initKeyboard();
+
+
+
     this.startLevelTimer();
   },
 
   update: function() {
     this.updateLevel();
     this.movePlayers();
-    for(var i = 0; i < actions.length; i++){
-      for(var y = 0; y < playersGroup.children.length; y++){
-        game.physics.arcade.overlap(playersGroup.children[y], actions[i].group, this.collideWithItem, null, this);
-      }
+    game.physics.arcade.collide(allItems);
+
+    for(var y = 0; y < playersGroup.children.length; y++){
+      game.physics.arcade.overlap(playersGroup.children[y], allItems, this.collideWithItem, null, this);
     }
     this.updateScore();
   },
@@ -42,10 +44,12 @@ mainState.prototype = {
 
       var fadeAway = game.add.tween(item).to({x: fadeDirection}, 800, Phaser.Easing.Linear.None, true);
       fadeAway.chain(game.add.tween(item).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true));
-      fadeAway.onComplete.addOnce(item.kill, this);
+      fadeAway.onComplete.add( function() {
+        var itemToRemove = itemsInPlay.indexOf(item);
+        itemsInPlay.splice(itemToRemove, 1);
+        item.kill()
+      }, this);
       fadeAway.start();
-
-      itemsInPlay--;
       players[playersIndex].score += actionPoints;
       this.showPoints(player, actionPoints);
     }
@@ -192,6 +196,11 @@ mainState.prototype = {
   },
 
   enableRelevantActions: function() {
+    // console.log("enabledActions: " + players[0].actionListeners.length);
+    // players[0].actionListeners.forEach(function(x) {
+    //   console.log(players[0].actionListeners.indexOf(x) + " = " + x.enabled);
+    // });
+
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
@@ -224,8 +233,23 @@ mainState.prototype = {
     gameProperties.currentBackground = game.add.sprite(0,0, levels[gameProperties.currentLevel].levelName);
   },
 
+  killAllItemsInPlay: function() {
+    for(var i = 0; i < itemsInPlay.length; i++){
+        itemsInPlay[i].kill();
+    }
+    itemsInPlay = [];
+  },
+
+  isOverlapping(newItem, existingItem) {
+    var boundsNew = newItem.getBounds();
+    var boundsExisting = existingItem.getBounds();
+    return Phaser.Rectangle.intersects(boundsA, boundsB);
+  },
+
   initGraphics: function() {
     totalItemsGenerated = 0;
+    this.killAllItemsInPlay();
+
     var text;
     var color;
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
@@ -234,25 +258,24 @@ mainState.prototype = {
       color = "";
     }
 
+    allItems = game.add.group();
+    allItems.enableBody = true;
+
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
-      actions[index].group = game.add.group();
-      actions[index].group.enableBody = true;
-
       //create group items
       for(var y = 0; y < gameProperties.itemsToGenerate; y++){
-        var item = actions[index].group.getFirstExists(false);
-        if(item){
-          item.revive();
-        } else {
-            item = actions[index].group.create(
-            Math.random() * gameProperties.itemMaxWidth,
-            Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
-            actions[index].imageName);
-            item.body.collideWorldBounds = true;
-            itemsInPlay++;
-            totalItemsGenerated++;
-        }
+        item = allItems.create(
+        Math.random() * gameProperties.itemMaxWidth,
+        Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
+        actions[index].imageName);
+
+        game.physics.arcade.enable(item);
+        // item.body.velocity.setTo(200, 200);
+        item.body.bounce.set(1);
+        item.body.collideWorldBounds = true;
+        itemsInPlay.push(item);
+        totalItemsGenerated++;
       }
       text = " NEW ACTION: " + actions[index].action + "!";
       color = actions[index].color;
@@ -287,7 +310,6 @@ mainState.prototype = {
   updateLevel: function() {
     if(gameProperties.oldLevel !== gameProperties.currentLevel){
       gameProperties.oldLevel = gameProperties.currentLevel;
-      console.log("current level is: " + gameProperties.currentLevel);
       this.updateBackground();
       this.initGraphics();
 
@@ -303,17 +325,18 @@ mainState.prototype = {
 
       //bring players to the top
       //TODO: FIX THIS BECAUSE ITEMS ARE BEING BURIED..
-      var enabledActions = levels[gameProperties.currentLevel].enabledActions;
-      for(var i = 0; i < enabledActions.length; i++){
-        var actionIndex = enabledActions[i];
-        game.world.bringToTop(actions[actionIndex].group);
-      }
+      // var enabledActions = levels[gameProperties.currentLevel].enabledActions;
+      // for(var i = 0; i < enabledActions.length; i++){
+      //   var actionIndex = enabledActions[i];
+      //   // game.world.bringToTop(actions[actionIndex].group);
+      // }
+      game.world.bringToTop(allItems);
       game.world.bringToTop(playersGroup);
     }
   },
 
   render: function() {
-    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
+    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay.length
     + "\nItems Generated: " + totalItemsGenerated, 32, 32);
   },
 
