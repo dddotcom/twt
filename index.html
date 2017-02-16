@@ -11,6 +11,7 @@
     <!-- <h1>Tanya Wenya Tweens</h1> -->
     <div id="gameDiv">
     </div>
+    <button id="pauseSound">Stop Sound</button>
     <div id="actionText">
       <button id="actionTextButton" class="controllerButton"></button><span>LET'S GO!!!</span>
     </div>
@@ -19,16 +20,16 @@
         <img>
         <p class="score">000000</p>
         <button class="keyboardButton notUsed"><span>~</br>`</span></button>
-        <button class=" controllerButton" > <br> </button>
-        <button class=" controllerButton" > <br> </button>
-        <button class=" controllerButton" > <br> </button>
-        <button class=" controllerButton" > <br> </button>
+        <button class=" controllerButton" >1<br> </button>
+        <button class=" controllerButton" >2<br> </button>
+        <button class=" controllerButton" >3<br> </button>
+        <button class=" controllerButton" >4<br> </button>
         <button class="keyboardButton notUsed"><br>5</button>
         <br>
         <button class="keyboardButton tabKey notUsed"><br>tab</button>
-        <button class=" controllerButton" > <br> </button>
+        <button class=" controllerButton" >Q<br> </button>
         <button class="keyboardButton" id="87"><br>W</button>
-        <button class=" controllerButton"> <br> </button>
+        <button class=" controllerButton">E<br> </button>
         <button class="keyboardButton notUsed"><br>R</button>
         <br>
         <button class="keyboardButton" id="65"><br>A</button>
@@ -40,16 +41,16 @@
         <img>
         <p class="score">000000</p>
         <button class="keyboardButton notUsed"><br>6</button>
-        <button class=" controllerButton"><br></button>
-        <button class=" controllerButton"><br></button>
-        <button class=" controllerButton"><br></button>
-        <button class=" controllerButton"><br></button>
+        <button class=" controllerButton">7<br></button>
+        <button class=" controllerButton">8<br></button>
+        <button class=" controllerButton">9<br></button>
+        <button class=" controllerButton">0<br></button>
         <button class="keyboardButton notUsed"><span>-</br>_</span></button>
         <br>
         <button class="keyboardButton notUsed"><br>Y</button>
-        <button class=" controllerButton"><br></button>
+        <button class=" controllerButton">U<br></button>
         <button class="keyboardButton" id="73"><br>I</button>
-        <button class=" controllerButton"><br></button>
+        <button class=" controllerButton">O<br></button>
         <button class="keyboardButton notUsed"><br>P</button>
         <br>
         <button class="keyboardButton" id="74"><br>J</button>
@@ -57,6 +58,13 @@
         <button class="keyboardButton" id="76"><br>L</button>
       </div>
     </div>
+    <audio class="actionAudio"></audio>
+    <audio class="actionAudio"></audio>
+    <audio class="actionAudio"></audio>
+    <audio class="actionAudio"></audio>
+    <audio class="actionAudio"></audio>
+    <audio class="actionAudio"></audio>
+    <audio id="success" loop src="assets/audio/success.ogg"></audio>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type="text/javascript" src="js/data.js"></script>

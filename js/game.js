@@ -93,21 +93,27 @@ mainState.prototype = {
       else if(players[i].actionListeners[0].isDown){
         playersGroup.children[i].animations.play(actions[0].animationName);
         $("#" + actions[0].command[i]).addClass("hover");
+        $('#' + actions[0].animationName).get(0).play();
       } else if(players[i].actionListeners[1].isDown){
         playersGroup.children[i].animations.play(actions[1].animationName);
         $("#" + actions[1].command[i]).addClass("hover");
+        $('#' + actions[1].animationName).get(0).play();
       } else if(players[i].actionListeners[2].isDown){
         playersGroup.children[i].animations.play(actions[2].animationName);
         $("#" + actions[2].command[i]).addClass("hover");
+        $('#' + actions[2].animationName).get(0).play();
       } else if(players[i].actionListeners[3].isDown){
         playersGroup.children[i].animations.play(actions[3].animationName);
         $("#" + actions[3].command[i]).addClass("hover");
+        $('#' + actions[3].animationName).get(0).play();
       } else if(players[i].actionListeners[4].isDown){
         playersGroup.children[i].animations.play(actions[4].animationName);
         $("#" + actions[4].command[i]).addClass("hover");
+        $('#' + actions[4].animationName).get(0).play();
       } else if(players[i].actionListeners[5].isDown){
         playersGroup.children[i].animations.play(actions[5].animationName);
         $("#" + actions[5].command[i]).addClass("hover");
+        $('#' + actions[5].animationName).get(0).play();
       }
       else {
         this.removeHover(players[i].spriteName);
@@ -307,8 +313,8 @@ mainState.prototype = {
   },
 
   render: function() {
-    // game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
-    // + "\nItems Generated: " + totalItemsGenerated, 32, 32);
+    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
+    + "\nItems Generated: " + totalItemsGenerated, 32, 32);
   },
 
 };

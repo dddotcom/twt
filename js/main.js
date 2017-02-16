@@ -9,6 +9,16 @@ $(document).ready( function() {
   console.log("DOM Loaded");
 
   displayPlayerControllers();
+  initializeAudio();
+  $("#success").get(0).play();
+
+  $("#pauseSound").click(function() {
+    if($("#success").get(0).paused){
+      $("#success").get(0).play();
+    } else {
+      $("#success").get(0).pause();
+    }
+  })
 });
 
 function randomizePlayerActions(playerIndex){
@@ -72,4 +82,11 @@ function updateActionText(text, color){
 
 function updatePoints(playerIndex, score){
   $("#" + players[playerIndex].spriteName + " .score").text(score);
+}
+
+function initializeAudio(){
+  $(".actionAudio").each(function(i){
+    $(this).attr('id', actions[i].animationName);
+    $(this).attr('src', actions[i].audioURL);
+  })
 }
