@@ -5,7 +5,6 @@ mainState.prototype = {
   create: function() {
     this.initPhysics();
     this.initBackground();
-    this.initText();
     this.initGraphics();
     this.calculateLevelTime();
     this.initPlayers();

@@ -50,18 +50,9 @@ var players = [
 ];
 
 var fontAssets = {
-  actionFontStyle: {font: '32px "Fredoka One"', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
-  actionTextWidth: 16,
-  actionTextHeight: gameProperties.screenHeight - 50,
-  scoreTextWidthLeft: gameProperties.screenWidth * 0.01,
-  scoreTextWidthRight: gameProperties.screenWidth * 0.72,
-  scoreTextHeight: gameProperties.screenHeight * 0.02,
-  scoreFontStyle: {font: '25px "Fredoka One"', fill: 'rgba(0,0,0, 0.9)', backgroundcolor: 'rgba(0,0,0, 0.5)'},
-  scoreFontStyleP1: {font: '25px "Fredoka One"', fill: '#33cc33'},
-  scoreFontStyleP2: {font: '25px "Fredoka One"', fill: '#cc3399'},
   pointsFontStyle: [
     {font: '30px "Fredoka One"', fill: '#33cc33', backgroundcolor: 'rgba(0,0,0, 0.5)'},
-    {font: '30px "Fredoka One"', fill: '#cc3399', backgroundcolor: 'rgba(0,0,0, 0.5)'},
+    {font: '30px "Fredoka One"', fill: '#FF8C00', backgroundcolor: 'rgba(0,0,0, 0.5)'},
   ],
 };
 
