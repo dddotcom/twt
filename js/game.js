@@ -27,7 +27,7 @@ mainState.prototype = {
   leaveLevelEarly: function() {
     //if all items have been killed
     if(itemsInPlay.length === 0){
-      game.time.events.remove(gameProperties.levelTimer);
+      this.removeLevelTimers();
       this.goToNextLevel()
     }
   },
@@ -39,10 +39,17 @@ mainState.prototype = {
     item.y = newHeight;
   },
 
+  decreaseActionPointValue: function() {
+    if(gameProperties.actionPointsCurrent > gameProperties.actionPointsMin){
+        gameProperties.actionPointsCurrent = gameProperties.actionPointsCurrent - gameProperties.actionPointsDecreaseRate.points;
+    }
+    console.log(gameProperties.actionPointsCurrent);
+  },
+
   collideWithItem: function(player, item) {
     var items = actions.map(function(o) { return o.imageName; });
     var actionIndex = items.indexOf(item.key);
-    var actionPoints = actions[actionIndex].points;
+    var actionPoints = gameProperties.actionPointsCurrent;
     var playersIndex = player.key.split("player")[1];
     var actionKey = players[playersIndex].actionListeners[actionIndex];
 
@@ -306,8 +313,15 @@ mainState.prototype = {
     levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimer);
   },
 
+  removeLevelTimers: function() {
+    game.time.events.remove(gameProperties.levelTimer);
+    game.time.events.remove(gameProperties.actionPointsTimer);
+  },
+
   startLevelTimer: function() {
     gameProperties.levelTimer = game.time.events.add(levelTime, this.goToNextLevel, this);
+    //start actionPointsTimer
+    gameProperties.actionPointsTimer = game.time.events.loop(gameProperties.actionPointsDecreaseRate.time, this.decreaseActionPointValue, this);
   },
 
   updateBackground: function() {
@@ -323,6 +337,7 @@ mainState.prototype = {
   updateLevel: function() {
     if(gameProperties.oldLevel !== gameProperties.currentLevel){
       gameProperties.oldLevel = gameProperties.currentLevel;
+      gameProperties.actionPointsCurrent = gameProperties.actionPointsMax;
       this.updateBackground();
       this.initGraphics();
 
@@ -334,6 +349,7 @@ mainState.prototype = {
       this.enableRelevantActions();
       this.enableRelevantAnimations();
       this.calculateLevelTime();
+      this.removeLevelTimers();
       this.startLevelTimer();
 
       //bring players to the top

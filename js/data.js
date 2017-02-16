@@ -16,6 +16,13 @@ var gameProperties = {
   itemsToGenerate: 1,
   titleName: 'title',
   titleURL: 'assets/backgrounds/title.png',
+  actionPointsMax: 800,
+  actionPointsMin: 100,
+  actionPointsCurrent: 800,
+  actionPointsDecreaseRate: {
+    points: 100,
+    time: 1500
+  },
 };
 
 var players = [
@@ -151,7 +158,7 @@ var actions = [
     imageURL: 'assets/items/shower3.png',
     animationName: 'shower',
     animationFrames: [7,8],
-    points: 400,
+    points: 800,
     color: 'green',
     audioURL: 'assets/audio/shampoo.m4a',
   },
