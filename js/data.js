@@ -28,7 +28,7 @@ var gameProperties = {
     points: 100,
     time: 2000
   },
-  debug: false,
+  debug: true,
 };
 
 var players = [

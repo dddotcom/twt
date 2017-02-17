@@ -2,6 +2,7 @@ var mainState = function(game){
   this.text;
   this.color;
   this.actionsSeen = new Set();
+  this.overLaptime;
 };
 
 mainState.prototype = {
@@ -19,7 +20,6 @@ mainState.prototype = {
   update: function() {
     this.updateLevel();
     this.movePlayers();
-    game.physics.arcade.overlap(allItems, allItems, this.removeOverlap, null, this);
 
     for(var y = 0; y < playersGroup.children.length; y++){
       game.physics.arcade.overlap(playersGroup.children[y], allItems, this.collideWithItem, null, this);
@@ -308,6 +308,9 @@ mainState.prototype = {
         totalItemsGenerated++;
       }
     }
+
+    game.physics.arcade.overlap(allItems, allItems, this.removeOverlap, null, this);
+
     if(enabledActions.length === 0){
       this.text = "";
       this.color = "";
