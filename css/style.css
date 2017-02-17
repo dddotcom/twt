@@ -108,6 +108,11 @@ canvas {
   width: 25%;
 }
 
+.black {
+  background-color: black;
+  box-shadow: 0 10px black;
+}
+
 .blue {
   background-color: #1f78b4;
   box-shadow: 0 10px #a6cee3;

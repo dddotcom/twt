@@ -1,4 +1,8 @@
-var mainState = function(game){};
+var mainState = function(game){
+  this.text;
+  this.color;
+  this.actionsSeen = new Set();
+};
 
 mainState.prototype = {
 
@@ -29,7 +33,6 @@ mainState.prototype = {
     //if all items have been killed
     if( gameProperties.currentLevel !== 0 && gameProperties.currentLevel !== levels.length-1){
       if(itemsInPlay.length === 0){
-        console.log("leaving level early!");
         this.removeLevelTimers();
         this.goToNextLevel()
       }
@@ -47,7 +50,8 @@ mainState.prototype = {
     if(gameProperties.actionPointsCurrent > gameProperties.actionPointsMin){
         gameProperties.actionPointsCurrent = gameProperties.actionPointsCurrent - gameProperties.actionPointsDecreaseRate.points;
     }
-    console.log(gameProperties.actionPointsCurrent);
+    //
+    this.generateActionText();
   },
 
   collideWithItem: function(player, item) {
@@ -71,7 +75,7 @@ mainState.prototype = {
       fadeAway.onComplete.add( function() {
         var itemToRemove = itemsInPlay.indexOf(item);
         itemsInPlay.splice(itemToRemove, 1);
-        item.kill()
+        item.destroy();
       }, this);
       fadeAway.start();
       players[playersIndex].score += actionPoints;
@@ -234,6 +238,14 @@ mainState.prototype = {
     }
   },
 
+  addToActionsSeen: function() {
+    var enabledActions = levels[gameProperties.currentLevel].enabledActions;
+    for(var i = 0; i < enabledActions.length; i++){
+      var index = enabledActions[i];
+      this.actionsSeen.add(index);
+    }
+  },
+
   disableAllActions: function(){
     for(var i = 0; i < actions.length; i++){
       for(var y = 0; y < players.length; y++){
@@ -274,13 +286,7 @@ mainState.prototype = {
     totalItemsGenerated = 0;
     this.killAllItemsInPlay();
 
-    var text;
-    var color;
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
-    if(enabledActions.length === 0){
-      text = "";
-      color = "";
-    }
 
     allItems = game.add.group();
     allItems.enableBody = true;
@@ -301,14 +307,44 @@ mainState.prototype = {
         itemsInPlay.push(item);
         totalItemsGenerated++;
       }
-      text = " NEW ACTION: " + actions[index].action + "!";
-      color = actions[index].color;
     }
-    updateActionText(text, color);
+    if(enabledActions.length === 0){
+      this.text = "";
+      this.color = "";
+    }
+    this.generateActionText();
+  },
+
+  generateActionText: function(){
+    var currentLevel = gameProperties.currentLevel;
+    var currentLevelActions = levels[currentLevel].enabledActions;
+    var actionIndex;
+
+    //chose a random action to display
+    if(currentLevelActions.length > 1){
+        actionIndex = currentLevelActions[Math.floor(Math.random()*currentLevelActions.length)];
+    } else if(currentLevelActions.length === 1) {
+        actionIndex = currentLevelActions[0];
+    } else {
+      this.text = "";
+      this.color = "black";
+      updateActionText(this.text, this.color);
+      return;
+    }
+
+    if(this.actionsSeen.has(actionIndex)){
+      this.text = (" " + actions[actionIndex].action + "!");
+    } else {
+      this.text = " NEW ACTION: " + actions[actionIndex].action + "!";
+    }
+    this.color = actions[actionIndex].color;
+
+    updateActionText(this.text, this.color);
   },
 
   goToNextLevel: function(){
     if(gameProperties.currentLevel <= levels.length-2){
+      this.addToActionsSeen();
       gameProperties.currentLevel++;
     }
   },
@@ -371,18 +407,21 @@ mainState.prototype = {
   },
 
   render: function() {
-    game.debug.text("Time until level: " +
-    (gameProperties.levelTimer.tick - gameProperties.levelTimer.timer._now) + "\nItems In Play: " + itemsInPlay.length
-    + "\nItems Generated: " + totalItemsGenerated, 32, 32);
-    allItems.forEach(function(item){
-        game.debug.body(item);
-    });
-
-    playersGroup
-    .forEach(function(player){
-      game.debug.body(player);
-    });
-
+    if(gameProperties.debug){
+      // gameProperties.levelTimer.tick - gameProperties.levelTimer.timer._now
+      // if(gameProperties.actionPointsTimer){
+        game.debug.text("Action Text Timer: " +
+        (gameProperties.levelTimer.tick - gameProperties.levelTimer.timer._now) + "\nItems In Play: " + itemsInPlay.length
+        + "\nItems Generated: " + totalItemsGenerated, 32, 32);
+        allItems.forEach(function(item){
+            game.debug.body(item);
+        });
+      // }
+      playersGroup
+      .forEach(function(player){
+        game.debug.body(player);
+      });
+    }
   },
 
 };
