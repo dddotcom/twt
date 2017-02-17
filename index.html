@@ -4,14 +4,14 @@
     <meta charset="utf-8">
     <title>Tanya Wenya tweens</title>
     <link rel="shortcut icon" href="assets/favicon.png" type="image/x-icon">
-    <link href="https://fonts.googleapis.com/css?family=Fredoka+One" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Fredoka+One|Scope+One" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
+    <script src="https://use.fontawesome.com/27151238fb.js"></script>
   </head>
   <body>
-    <!-- <h1>Tanya Wenya Tweens</h1> -->
     <div id="gameDiv">
     </div>
-    <button id="pauseSound">Stop Sound</button>
+    <i id="pauseSound" class="fa fa-2x fa-volume-up" aria-hidden="true"></i>
     <div id="actionText">
       <button id="actionTextButton" class="controllerButton"></button><span>LET'S GO!!!</span>
     </div>
@@ -58,13 +58,21 @@
         <button class="keyboardButton" id="76"><br>L</button>
       </div>
     </div>
+    <div id="footer">
+      this game was inspired by <a href="http://tenyawanyateens.com/">Tenya Wanya Teens</a>, a party game co-created by
+      <a href="http://www.uvula.jp/">Uvula</a>, <a href="http://thewildrumpus.co.uk/">Wild Rumpus</a>
+      and <a href="http://venuspatrol.com/">Venus Patrol</a>
+      <br>background music from <a href="https://en.wikipedia.org/wiki/Katamari_Damacy">Katamari Damacy</a>,
+      all images and sounds made with <i class="fa fa-pencil" aria-hidden="true"></i> by <a href="https://github.com/dddotcom">dddotcom</a>
+
+    </div>
     <audio class="actionAudio"></audio>
     <audio class="actionAudio"></audio>
     <audio class="actionAudio"></audio>
     <audio class="actionAudio"></audio>
     <audio class="actionAudio"></audio>
     <audio class="actionAudio"></audio>
-    <audio id="success" loop src="assets/audio/success.ogg"></audio>
+    <audio id="bgMusic" loop src="assets/audio/bgMusic.mp3"></audio>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
     <script type="text/javascript" src="js/phaser.min.js"></script>
     <script type="text/javascript" src="js/data.js"></script>

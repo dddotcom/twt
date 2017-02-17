@@ -2,10 +2,35 @@ body {
   background-color: black;
   text-align: center;
   font-family: 'Fredoka One', cursive;
+  color: white;
 }
 
 canvas {
   margin: 10px auto;
+}
+
+#keyboard {
+  display: inline-block;
+  width: 100%;
+}
+
+#footer {
+  font-family: 'Scope One', serif;
+  font-size: 1em;
+  letter-spacing: 1px;
+  width: 90%;
+  margin: 30px auto 0 auto;
+  line-height: 1.5;
+}
+
+#footer a{
+  text-decoration: none;
+  color: gold;
+
+}
+
+#footer a:hover {
+  text-decoration: underline;
 }
 
 #button {
@@ -17,7 +42,6 @@ canvas {
 #actionText {
   margin: 0px auto;
   padding: 5px 5px 10px 5px;
-  color: white;
   width: auto;
   border-radius: 15px;
   font-size: 1.5em;

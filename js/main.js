@@ -10,13 +10,18 @@ $(document).ready( function() {
 
   displayPlayerControllers();
   initializeAudio();
-  // $("#success").get(0).play();
+  $("#bgMusic").get(0).play();
 
   $("#pauseSound").click(function() {
-    if($("#success").get(0).paused){
-      $("#success").get(0).play();
+    if($("#bgMusic").get(0).paused){
+      $("#bgMusic").get(0).play();
+      $("#pauseSound").removeClass("fa-volume-off");
+      $("#pauseSound").addClass("fa-volume-up");
     } else {
-      $("#success").get(0).pause();
+      $("#bgMusic").get(0).pause();
+      $("#pauseSound").removeClass("fa-volume-up");
+      $("#pauseSound").addClass("fa-volume-off");
+
     }
   })
 });
