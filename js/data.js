@@ -3,6 +3,8 @@ var gameProperties = {
   screenHeight: 600,
   playerSpriteHeight: 200,
   playerSpriteWidth: 126,
+  winLoseSpriteHeight:180,
+  winLoseSpriteWidth: 229,
   playerSpeed: 300,
   playerStartWidth: 32,
   itemMinHeight: 50,
@@ -10,12 +12,15 @@ var gameProperties = {
   itemMaxWidth: 600,
   itemMinWidth: 100,
   actionTimer: 500,
+  actionTimeAddition: 2000,
   levelbaseTime: 10000,
   oldLevel: 0,
   currentLevel: 0,
-  itemsToGenerate: 1,
+  itemsToGenerate: 2,
   titleName: 'title',
   titleURL: 'assets/backgrounds/title.png',
+  gameOverName: 'gameOver',
+  gameOverURL: 'assets/backgrounds/gameOver.png',
   actionPointsMax: 800,
   actionPointsMin: 100,
   actionPointsCurrent: 800,
@@ -39,6 +44,10 @@ var players = [
     lastDirection:'',
     score: 0,
     validKeys: [],
+    winLoseName: 'winLosePlayer0',
+    winLoseURL: 'assets/playerSprites/winLoseP0.png',
+    winFrame: 0,
+    loseFrame: 1,
   },
   {
     spriteName: 'player1',
@@ -53,6 +62,10 @@ var players = [
     lastDirection: '',
     score: 0,
     validKeys: [],
+    winLoseName: 'winLosePlayer1',
+    winLoseURL: 'assets/playerSprites/winLoseP1.png',
+    winFrame: 0,
+    loseFrame: 1,
   },
 
 ];
@@ -102,41 +115,41 @@ var levels = [
     levelURL: 'assets/backgrounds/school.png',
     enabledActions: [2,3], //bat
   },
-  // {
-  //   levelName: '6',
-  //   levelURL: 'assets/backgrounds/classroom1.png',
-  //   enabledActions: [4], //answer
-  // },
-  // {
-  //   levelName: '7',
-  //   levelURL: 'assets/backgrounds/hallway1.png',
-  //   enabledActions: [5], //rockout
-  // },
-  // {
-  //   levelName: '8',
-  //   levelURL: 'assets/backgrounds/classroom1.png',
-  //   enabledActions: [4], //answer
-  // },
-  // {
-  //   levelName: '9',
-  //   levelURL: 'assets/backgrounds/school.png',
-  //   enabledActions: [5,3], //bat
-  // },
-  // {
-  //   levelName: '10',
-  //   levelURL: 'assets/backgrounds/road.png',
-  //   enabledActions: [0,3,5], //all + punch
-  // },
-  // {
-  //   levelName: '11',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [0,1,4,2], //all
-  // },
-  // {
-  //   levelName: '12',
-  //   levelURL: 'assets/backgrounds/br_night.png',
-  //   enabledActions: [], //sleep
-  // },
+  {
+    levelName: '6',
+    levelURL: 'assets/backgrounds/classroom1.png',
+    enabledActions: [4], //answer
+  },
+  {
+    levelName: '7',
+    levelURL: 'assets/backgrounds/hallway1.png',
+    enabledActions: [5], //rockout
+  },
+  {
+    levelName: '8',
+    levelURL: 'assets/backgrounds/classroom1.png',
+    enabledActions: [4], //answer
+  },
+  {
+    levelName: '9',
+    levelURL: 'assets/backgrounds/school.png',
+    enabledActions: [5,3], //bat
+  },
+  {
+    levelName: '10',
+    levelURL: 'assets/backgrounds/road.png',
+    enabledActions: [0,3,5], //all + punch
+  },
+  {
+    levelName: '11',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0,1,4,2], //all
+  },
+  {
+    levelName: '12',
+    levelURL: 'assets/backgrounds/br_night.png',
+    enabledActions: [], //sleep
+  },
 ];
 
 var actions = [

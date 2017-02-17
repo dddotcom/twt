@@ -22,11 +22,12 @@ mainState.prototype = {
     }
     this.updateScore();
     this.leaveLevelEarly();
+    this.gameOver();
   },
 
   leaveLevelEarly: function() {
     //if all items have been killed
-    if(itemsInPlay.length === 0){
+    if( gameProperties.currentLevel !== 0 && itemsInPlay.length === 0){
       this.removeLevelTimers();
       this.goToNextLevel()
     }
@@ -310,7 +311,7 @@ mainState.prototype = {
   },
 
   calculateLevelTime: function() {
-    levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimer);
+    levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimeAddition);
   },
 
   removeLevelTimers: function() {
@@ -319,9 +320,13 @@ mainState.prototype = {
   },
 
   startLevelTimer: function() {
+    //TODO: something is up with this. figure it out
     gameProperties.levelTimer = game.time.events.add(levelTime, this.goToNextLevel, this);
     //start actionPointsTimer
-    gameProperties.actionPointsTimer = game.time.events.loop(gameProperties.actionPointsDecreaseRate.time, this.decreaseActionPointValue, this);
+    if(gameProperties.currentLevel > 0){
+        console.log(gameProperties.currentLevel);
+        gameProperties.actionPointsTimer = game.time.events.loop(gameProperties.actionPointsDecreaseRate.time, this.decreaseActionPointValue, this);
+    }
   },
 
   updateBackground: function() {
@@ -359,8 +364,16 @@ mainState.prototype = {
     }
   },
 
+  gameOver: function() {
+    if( (gameProperties.levelTimer.timer.duration === 0) && (gameProperties.currentLevel === levels.length-1 )){
+      console.log("game over!");
+      this.game.state.start('state3');
+    }
+  },
+
   render: function() {
-    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay.length
+    // game.time.events.duration
+    game.debug.text("Time until event: " + gameProperties.levelTimer.timer.duration + "\nItems In Play: " + itemsInPlay.length
     + "\nItems Generated: " + totalItemsGenerated, 32, 32);
     allItems.forEach(function(item){
         game.debug.body(item);
