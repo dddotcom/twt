@@ -27,9 +27,12 @@ mainState.prototype = {
 
   leaveLevelEarly: function() {
     //if all items have been killed
-    if( gameProperties.currentLevel !== 0 && itemsInPlay.length === 0){
-      this.removeLevelTimers();
-      this.goToNextLevel()
+    if( gameProperties.currentLevel !== 0 && gameProperties.currentLevel !== levels.length-1){
+      if(itemsInPlay.length === 0){
+        console.log("leaving level early!");
+        this.removeLevelTimers();
+        this.goToNextLevel()
+      }
     }
   },
 
@@ -320,11 +323,8 @@ mainState.prototype = {
   },
 
   startLevelTimer: function() {
-    //TODO: something is up with this. figure it out
     gameProperties.levelTimer = game.time.events.add(levelTime, this.goToNextLevel, this);
-    //start actionPointsTimer
     if(gameProperties.currentLevel > 0){
-        console.log(gameProperties.currentLevel);
         gameProperties.actionPointsTimer = game.time.events.loop(gameProperties.actionPointsDecreaseRate.time, this.decreaseActionPointValue, this);
     }
   },
@@ -358,26 +358,30 @@ mainState.prototype = {
       this.startLevelTimer();
 
       //bring players to the top
-      //TODO: FIX THIS BECAUSE ITEMS ARE BEING BURIED..
       game.world.bringToTop(allItems);
       game.world.bringToTop(playersGroup);
     }
   },
 
   gameOver: function() {
-    if( (gameProperties.levelTimer.timer.duration === 0) && (gameProperties.currentLevel === levels.length-1 )){
-      console.log("game over!");
+    var timeLeft = gameProperties.levelTimer.tick - gameProperties.levelTimer.timer._now;
+    if( (timeLeft === 0) && (gameProperties.currentLevel === levels.length-1 )){
       this.game.state.start('state3');
     }
   },
 
   render: function() {
-    // game.time.events.duration
-    game.debug.text("Time until event: " + gameProperties.levelTimer.timer.duration + "\nItems In Play: " + itemsInPlay.length
+    game.debug.text("Time until level: " +
+    (gameProperties.levelTimer.tick - gameProperties.levelTimer.timer._now) + "\nItems In Play: " + itemsInPlay.length
     + "\nItems Generated: " + totalItemsGenerated, 32, 32);
     allItems.forEach(function(item){
         game.debug.body(item);
-    })
+    });
+
+    playersGroup
+    .forEach(function(player){
+      game.debug.body(player);
+    });
 
   },
 
