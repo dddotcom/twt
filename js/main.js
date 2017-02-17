@@ -7,7 +7,6 @@ game.state.start('state0');
 
 $(document).ready( function() {
   console.log("DOM Loaded");
-
   displayPlayerControllers();
   initializeAudio();
   $("#bgMusic").get(0).play();
