@@ -8,7 +8,6 @@ mainState.prototype = {
     this.initGraphics();
     this.calculateLevelTime();
     this.initPlayers();
-
     this.initKeyboard();
     this.startLevelTimer();
   },
@@ -16,18 +15,42 @@ mainState.prototype = {
   update: function() {
     this.updateLevel();
     this.movePlayers();
-    for(var i = 0; i < actions.length; i++){
-      for(var y = 0; y < playersGroup.children.length; y++){
-        game.physics.arcade.overlap(playersGroup.children[y], actions[i].group, this.collideWithItem, null, this);
-      }
+    game.physics.arcade.overlap(allItems, allItems, this.removeOverlap, null, this);
+
+    for(var y = 0; y < playersGroup.children.length; y++){
+      game.physics.arcade.overlap(playersGroup.children[y], allItems, this.collideWithItem, null, this);
     }
     this.updateScore();
+    this.leaveLevelEarly();
+    this.gameOver();
+  },
+
+  leaveLevelEarly: function() {
+    //if all items have been killed
+    if( gameProperties.currentLevel !== 0 && itemsInPlay.length === 0){
+      this.removeLevelTimers();
+      this.goToNextLevel()
+    }
+  },
+
+  removeOverlap: function(item, allItems) {
+    var newWidth = Math.random() * gameProperties.itemMaxWidth + gameProperties.itemMinWidth;
+    var newHeight = Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight;
+    item.x = newWidth;
+    item.y = newHeight;
+  },
+
+  decreaseActionPointValue: function() {
+    if(gameProperties.actionPointsCurrent > gameProperties.actionPointsMin){
+        gameProperties.actionPointsCurrent = gameProperties.actionPointsCurrent - gameProperties.actionPointsDecreaseRate.points;
+    }
+    console.log(gameProperties.actionPointsCurrent);
   },
 
   collideWithItem: function(player, item) {
     var items = actions.map(function(o) { return o.imageName; });
     var actionIndex = items.indexOf(item.key);
-    var actionPoints = actions[actionIndex].points;
+    var actionPoints = gameProperties.actionPointsCurrent;
     var playersIndex = player.key.split("player")[1];
     var actionKey = players[playersIndex].actionListeners[actionIndex];
 
@@ -42,10 +65,12 @@ mainState.prototype = {
 
       var fadeAway = game.add.tween(item).to({x: fadeDirection}, 800, Phaser.Easing.Linear.None, true);
       fadeAway.chain(game.add.tween(item).to({alpha: 0}, 800, Phaser.Easing.Linear.None, true));
-      fadeAway.onComplete.addOnce(item.kill, this);
+      fadeAway.onComplete.add( function() {
+        var itemToRemove = itemsInPlay.indexOf(item);
+        itemsInPlay.splice(itemToRemove, 1);
+        item.kill()
+      }, this);
       fadeAway.start();
-
-      itemsInPlay--;
       players[playersIndex].score += actionPoints;
       this.showPoints(player, actionPoints);
     }
@@ -192,6 +217,11 @@ mainState.prototype = {
   },
 
   enableRelevantActions: function() {
+    // console.log("enabledActions: " + players[0].actionListeners.length);
+    // players[0].actionListeners.forEach(function(x) {
+    //   console.log(players[0].actionListeners.indexOf(x) + " = " + x.enabled);
+    // });
+
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
@@ -224,8 +254,23 @@ mainState.prototype = {
     gameProperties.currentBackground = game.add.sprite(0,0, levels[gameProperties.currentLevel].levelName);
   },
 
+  killAllItemsInPlay: function() {
+    for(var i = 0; i < itemsInPlay.length; i++){
+        itemsInPlay[i].kill();
+    }
+    itemsInPlay = [];
+  },
+
+  isOverlapping(newItem, existingItem) {
+    var boundsNew = newItem.getBounds();
+    var boundsExisting = existingItem.getBounds();
+    return Phaser.Rectangle.intersects(boundsA, boundsB);
+  },
+
   initGraphics: function() {
     totalItemsGenerated = 0;
+    this.killAllItemsInPlay();
+
     var text;
     var color;
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
@@ -234,25 +279,24 @@ mainState.prototype = {
       color = "";
     }
 
+    allItems = game.add.group();
+    allItems.enableBody = true;
+
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
-      actions[index].group = game.add.group();
-      actions[index].group.enableBody = true;
-
       //create group items
       for(var y = 0; y < gameProperties.itemsToGenerate; y++){
-        var item = actions[index].group.getFirstExists(false);
-        if(item){
-          item.revive();
-        } else {
-            item = actions[index].group.create(
-            Math.random() * gameProperties.itemMaxWidth,
-            Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
-            actions[index].imageName);
-            item.body.collideWorldBounds = true;
-            itemsInPlay++;
-            totalItemsGenerated++;
-        }
+        item = allItems.create(
+        Math.random() * gameProperties.itemMaxWidth + gameProperties.itemMinWidth,
+        Math.random() * gameProperties.itemMaxHeight + gameProperties.itemMinHeight,
+        actions[index].imageName);
+
+        //  This adjusts the collision body size
+        item.body.setSize(item.body.halfWidth, item.body.halfHeight, item.body.halfWidth/2, item.body.halfHeight/2);
+        game.physics.arcade.enable(item);
+        item.body.collideWorldBounds = true;
+        itemsInPlay.push(item);
+        totalItemsGenerated++;
       }
       text = " NEW ACTION: " + actions[index].action + "!";
       color = actions[index].color;
@@ -267,11 +311,22 @@ mainState.prototype = {
   },
 
   calculateLevelTime: function() {
-    levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimer);
+    levelTime = gameProperties.levelbaseTime + (totalItemsGenerated * gameProperties.actionTimeAddition);
+  },
+
+  removeLevelTimers: function() {
+    game.time.events.remove(gameProperties.levelTimer);
+    game.time.events.remove(gameProperties.actionPointsTimer);
   },
 
   startLevelTimer: function() {
-    game.time.events.add(levelTime, this.goToNextLevel, this);
+    //TODO: something is up with this. figure it out
+    gameProperties.levelTimer = game.time.events.add(levelTime, this.goToNextLevel, this);
+    //start actionPointsTimer
+    if(gameProperties.currentLevel > 0){
+        console.log(gameProperties.currentLevel);
+        gameProperties.actionPointsTimer = game.time.events.loop(gameProperties.actionPointsDecreaseRate.time, this.decreaseActionPointValue, this);
+    }
   },
 
   updateBackground: function() {
@@ -287,7 +342,7 @@ mainState.prototype = {
   updateLevel: function() {
     if(gameProperties.oldLevel !== gameProperties.currentLevel){
       gameProperties.oldLevel = gameProperties.currentLevel;
-      console.log("current level is: " + gameProperties.currentLevel);
+      gameProperties.actionPointsCurrent = gameProperties.actionPointsMax;
       this.updateBackground();
       this.initGraphics();
 
@@ -299,22 +354,31 @@ mainState.prototype = {
       this.enableRelevantActions();
       this.enableRelevantAnimations();
       this.calculateLevelTime();
+      this.removeLevelTimers();
       this.startLevelTimer();
 
       //bring players to the top
       //TODO: FIX THIS BECAUSE ITEMS ARE BEING BURIED..
-      var enabledActions = levels[gameProperties.currentLevel].enabledActions;
-      for(var i = 0; i < enabledActions.length; i++){
-        var actionIndex = enabledActions[i];
-        game.world.bringToTop(actions[actionIndex].group);
-      }
+      game.world.bringToTop(allItems);
       game.world.bringToTop(playersGroup);
     }
   },
 
+  gameOver: function() {
+    if( (gameProperties.levelTimer.timer.duration === 0) && (gameProperties.currentLevel === levels.length-1 )){
+      console.log("game over!");
+      this.game.state.start('state3');
+    }
+  },
+
   render: function() {
-    game.debug.text("Time until event: " + game.time.events.duration + "\nItems In Play: " + itemsInPlay
+    // game.time.events.duration
+    game.debug.text("Time until event: " + gameProperties.levelTimer.timer.duration + "\nItems In Play: " + itemsInPlay.length
     + "\nItems Generated: " + totalItemsGenerated, 32, 32);
+    allItems.forEach(function(item){
+        game.debug.body(item);
+    })
+
   },
 
 };

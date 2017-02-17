@@ -4,7 +4,7 @@ var preload = function(game){}
 preload.prototype = {
 
   preload: function() {
-    itemsInPlay = 0;
+    // itemsInPlay = 0;
     totalItemsGenerated = 0;
 
     this.loadAssets();
@@ -17,7 +17,10 @@ preload.prototype = {
           game.load.image(levels[i].levelName, levels[i].levelURL);
       }
       //title
-        game.load.image(gameProperties.titleName, gameProperties.titleURL);
+      game.load.image(gameProperties.titleName, gameProperties.titleURL);
+
+      //gameOver
+      game.load.image(gameProperties.gameOverName, gameProperties.gameOverURL);
 
       //items
       for(var i = 0; i < actions.length; i++){
@@ -30,6 +33,11 @@ preload.prototype = {
           players[i].spriteName, players[i].spriteURL,
           gameProperties.playerSpriteWidth,
           gameProperties.playerSpriteHeight
+        );
+        game.load.spritesheet(
+          players[i].winLoseName, players[i].winLoseURL,
+          gameProperties.winLoseSpriteWidth,
+          gameProperties.winLoseSpriteHeight
         );
       }
     },

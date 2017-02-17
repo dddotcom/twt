@@ -3,18 +3,31 @@ var gameProperties = {
   screenHeight: 600,
   playerSpriteHeight: 200,
   playerSpriteWidth: 126,
+  winLoseSpriteHeight:180,
+  winLoseSpriteWidth: 230,
   playerSpeed: 300,
   playerStartWidth: 32,
-  itemMinHeight: 191,
-  itemMaxHeight:200,
-  itemMaxWidth: 800,
+  itemMinHeight: 50,
+  itemMaxHeight: 500,
+  itemMaxWidth: 600,
+  itemMinWidth: 100,
   actionTimer: 500,
-  levelbaseTime: 10000,
+  actionTimeAddition: 4000,
+  levelbaseTime: 3000,
   oldLevel: 0,
   currentLevel: 0,
-  itemsToGenerate: 1,
+  itemsToGenerate: 2,
   titleName: 'title',
   titleURL: 'assets/backgrounds/title.png',
+  gameOverName: 'gameOver',
+  gameOverURL: 'assets/backgrounds/gameOver.png',
+  actionPointsMax: 800,
+  actionPointsMin: 100,
+  actionPointsCurrent: 800,
+  actionPointsDecreaseRate: {
+    points: 100,
+    time: 1500
+  },
 };
 
 var players = [
@@ -31,6 +44,10 @@ var players = [
     lastDirection:'',
     score: 0,
     validKeys: [],
+    winLoseName: 'winLosePlayer0',
+    winLoseURL: 'assets/playerSprites/winLoseP0_1.png',
+    winFrame: [0,1],
+    loseFrame: [2,3],
   },
   {
     spriteName: 'player1',
@@ -45,6 +62,10 @@ var players = [
     lastDirection: '',
     score: 0,
     validKeys: [],
+    winLoseName: 'winLosePlayer1',
+    winLoseURL: 'assets/playerSprites/winLoseP1_2.png',
+    winFrame: [0,1],
+    loseFrame: [2,3],
   },
 
 ];
@@ -57,22 +78,23 @@ var fontAssets = {
 };
 
 var playersGroup, textGroup;
-var sinks, showers, skunks, rocks, chalkboards, microphones;
+var allItems;
 var cursors;
 var actionListeners;
-var itemsInPlay, totalItemsGenerated;
+var itemsInPlay = [];
+var totalItemsGenerated;
 
 var levels = [
   {
     levelName: '0',
     levelURL: 'assets/backgrounds/br_day.png',
-    enabledActions: [0,1,2,3,4,5],
+    enabledActions: [],
   },
-  // {
-  //   levelName: '1',
-  //   levelURL: 'assets/backgrounds/bathroom1.png',
-  //   enabledActions: [0], //teeth
-  // },
+  {
+    levelName: '1',
+    levelURL: 'assets/backgrounds/bathroom1.png',
+    enabledActions: [0], //teeth
+  },
   // {
   //   levelName: '2',
   //   levelURL: 'assets/backgrounds/bathroom1.png',
@@ -123,11 +145,11 @@ var levels = [
   //   levelURL: 'assets/backgrounds/bathroom1.png',
   //   enabledActions: [0,1,4,2], //all
   // },
-  // {
-  //   levelName: '12',
-  //   levelURL: 'assets/backgrounds/br_night.png',
-  //   enabledActions: [], //sleep
-  // },
+  {
+    levelName: '12',
+    levelURL: 'assets/backgrounds/br_night.png',
+    enabledActions: [], //sleep
+  },
 ];
 
 var actions = [
@@ -136,7 +158,6 @@ var actions = [
     command: [Phaser.Keyboard.ONE, Phaser.Keyboard.SEVEN],
     imageName: 'sink',
     imageURL: 'assets/items/sink2.png',
-    group: sinks,
     animationName: 'brushTeeth',
     animationFrames: [5,6],
     points: 800,
@@ -148,10 +169,9 @@ var actions = [
     command: [Phaser.Keyboard.TWO, Phaser.Keyboard.EIGHT],
     imageName: 'shower',
     imageURL: 'assets/items/shower3.png',
-    group: showers,
     animationName: 'shower',
     animationFrames: [7,8],
-    points: 400,
+    points: 800,
     color: 'green',
     audioURL: 'assets/audio/shampoo.m4a',
   },
@@ -160,7 +180,6 @@ var actions = [
     command: [Phaser.Keyboard.THREE, Phaser.Keyboard.NINE],
     imageName: 'skunk',
     imageURL: 'assets/items/skunk.png',
-    group: skunks,
     animationName: 'fart',
     animationFrames: [9,10,11],
     points: 800,
@@ -172,7 +191,6 @@ var actions = [
     command: [Phaser.Keyboard.FOUR, Phaser.Keyboard.ZERO],
     imageName: 'rock',
     imageURL: 'assets/items/sword.png',
-    group: rocks,
     animationName: 'brandish',
     animationFrames: [12,13],
     points: 800,
@@ -184,7 +202,6 @@ var actions = [
     command: [Phaser.Keyboard.Q, Phaser.Keyboard.U],
     imageName: 'chalkboard',
     imageURL: 'assets/items/chalkboard.png',
-    group: chalkboards,
     animationName: 'answer',
     animationFrames: [14,15,16],
     points: 800,
@@ -196,7 +213,6 @@ var actions = [
     command: [Phaser.Keyboard.E, Phaser.Keyboard.O],
     imageName: 'microphone',
     imageURL: 'assets/items/microphone.png',
-    group: microphones,
     animationName: 'rockOut',
     animationFrames: [18,19],
     points: 800,
