@@ -77,15 +77,15 @@ mainState.prototype = {
       }, this);
       fadeAway.start();
       players[playersIndex].score += actionPoints;
-      this.showPoints(player, actionPoints);
+      this.showPoints(player, item, actionPoints);
     }
 
   },
 
-  showPoints: function(player, actionPoints) {
+  showPoints: function(player, item, actionPoints) {
     var playersIndex = player.key.split("player")[1];
-    var width = player.position.x;
-    var height = player.position.y -20;
+    var width = item.position.x;
+    var height = item.position.y -20;
     var points = game.add.text(width, height, actionPoints + "", fontAssets.pointsFontStyle[playersIndex]);
     points.setShadow(3, 3, 'rgba(0,0,0,1.0)', 0);
     game.add.tween(points).to({y: height-50}, 800, Phaser.Easing.Linear.None, true);

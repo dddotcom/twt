@@ -12,6 +12,7 @@ $(document).ready( function() {
   $("#bgMusic").get(0).play();
 
   $("#pauseSound").click(function() {
+    console.log("pause sound clicked");
     if($("#bgMusic").get(0).paused){
       $("#bgMusic").get(0).play();
       $("#pauseSound").removeClass("fa-volume-off");

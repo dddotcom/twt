@@ -161,7 +161,7 @@ var levels = [
   {
     levelName: '11',
     levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [0,1,4], //all
+    enabledActions: [0,1,2], //all
   },
   {
     levelName: '12',

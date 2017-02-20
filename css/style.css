@@ -9,6 +9,12 @@ canvas {
   margin: 10px auto;
 }
 
+#pauseSound {
+  position: absolute;
+  margin-left: 10px;
+  left: 0;
+}
+
 #mobileMessage {
   width: 50%;
   font-family: 'Scope One', serif;
@@ -28,6 +34,7 @@ canvas {
 #keyboard {
   display: inline-block;
   width: 100%;
+  margin-top: -50px;
 }
 
 #footer {
@@ -196,5 +203,9 @@ and (max-device-width: 425px){
 
   #footer {
     font-size: 3em;
+  }
+
+  #keyboard {
+    margin-top: auto;
   }
 }
