@@ -21,9 +21,7 @@ mainState.prototype = {
     this.updateLevel();
     this.movePlayers();
 
-    for(var y = 0; y < playersGroup.children.length; y++){
-      game.physics.arcade.overlap(playersGroup.children[y], allItems, this.collideWithItem, null, this);
-    }
+    game.physics.arcade.overlap(playersGroup, allItems, this.collideWithItem, null, this);
     this.updateScore();
     this.leaveLevelEarly();
     this.gameOver();
@@ -102,58 +100,52 @@ mainState.prototype = {
   movePlayers: function() {
     for(var i = 0; i < playersGroup.children.length; i++){
       playersGroup.children[i].body.velocity.x = 0;
-      if(players[i].commandListeners[2].isDown){
+      if(players[i].commandListeners.left.isDown){
         playersGroup.children[i].body.velocity.x = -gameProperties.playerSpeed;
-        playersGroup.children[i].animations.play('left');
-        $("#" + players[i].leftCommand).addClass("hover");
+        playersGroup.children[i].animations.play(gameProperties.playerMovements.left.animationName);
+        $("#" + players[i].directionalCommands.left).addClass("hover");
         lastDirection = 'left';
-      } else if(players[i].commandListeners[3].isDown){
+      } else if(players[i].commandListeners.right.isDown){
         playersGroup.children[i].body.velocity.x = gameProperties.playerSpeed;
-        playersGroup.children[i].animations.play('right');
-        $("#" + players[i].rightCommand).addClass("hover");
+        playersGroup.children[i].animations.play(gameProperties.playerMovements.right.animationName);
+        $("#" + players[i].directionalCommands.right).addClass("hover");
         lastDirection = 'right';
-      } else if(players[i].commandListeners[1].isDown){
+      } else if(players[i].commandListeners.down.isDown){
         playersGroup.children[i].body.velocity.y = gameProperties.playerSpeed;
-        $("#" + players[i].downCommand).addClass("hover");
+        $("#" + players[i].directionalCommands.down).addClass("hover");
         this.moveUpAndDown(playersGroup.children[i]);
-      } else if(players[i].commandListeners[0].isDown){
+      } else if(players[i].commandListeners.up.isDown){
         playersGroup.children[i].body.velocity.y = -gameProperties.playerSpeed;
-        $("#" + players[i].upCommand).addClass("hover");
+        $("#" + players[i].directionalCommands.up).addClass("hover");
         this.moveUpAndDown(playersGroup.children[i]);
       }
-      //TODO: genericize this
       else if(players[i].actionListeners[0].isDown){
-        playersGroup.children[i].animations.play(actions[0].animationName);
-        $("#" + actions[0].command[i]).addClass("hover");
-        $('#' + actions[0].animationName).get(0).play();
+        this.playActionAnimation(i, 0);
       } else if(players[i].actionListeners[1].isDown){
-        playersGroup.children[i].animations.play(actions[1].animationName);
-        $("#" + actions[1].command[i]).addClass("hover");
-        $('#' + actions[1].animationName).get(0).play();
+        this.playActionAnimation(i, 1);
       } else if(players[i].actionListeners[2].isDown){
-        playersGroup.children[i].animations.play(actions[2].animationName);
-        $("#" + actions[2].command[i]).addClass("hover");
-        $('#' + actions[2].animationName).get(0).play();
+        this.playActionAnimation(i, 2);
       } else if(players[i].actionListeners[3].isDown){
-        playersGroup.children[i].animations.play(actions[3].animationName);
-        $("#" + actions[3].command[i]).addClass("hover");
-        $('#' + actions[3].animationName).get(0).play();
+        this.playActionAnimation(i, 3);
       } else if(players[i].actionListeners[4].isDown){
-        playersGroup.children[i].animations.play(actions[4].animationName);
-        $("#" + actions[4].command[i]).addClass("hover");
-        $('#' + actions[4].animationName).get(0).play();
+        this.playActionAnimation(i, 4);
       } else if(players[i].actionListeners[5].isDown){
-        playersGroup.children[i].animations.play(actions[5].animationName);
-        $("#" + actions[5].command[i]).addClass("hover");
-        $('#' + actions[5].animationName).get(0).play();
+        this.playActionAnimation(i, 5);
       }
       else {
         this.removeHover(players[i].spriteName);
+        playersGroup.children[i].body.velocity.x = 0;
         playersGroup.children[i].animations.stop();
         playersGroup.children[i].body.velocity.y = 0;
-        playersGroup.children[i].frame = 2;
+        playersGroup.children[i].frame = gameProperties.playerMovements.standStill.animationFrames;
       }
     }
+  },
+
+  playActionAnimation: function(playerIndex, actionIndex){
+    playersGroup.children[playerIndex].animations.play(actions[actionIndex].animationName);
+    $("#" + actions[actionIndex].command[playerIndex]).addClass("hover");
+    $('#' + actions[actionIndex].animationName).get(0).play();
   },
 
   moveUpAndDown: function(player){
@@ -184,8 +176,8 @@ mainState.prototype = {
 
         game.physics.arcade.enable(player);
         player.body.collideWorldBounds = true;
-        player.animations.add('left', [0, 1], 5, true);
-        player.animations.add('right', [3, 4], 5, true);
+        player.animations.add(gameProperties.playerMovements.left.animationName, gameProperties.playerMovements.left.animationFrames, 5, true);
+        player.animations.add(gameProperties.playerMovements.right.animationName, gameProperties.playerMovements.right.animationFrames, 5, true);
 
         playersGroup.add(player);
 
@@ -197,10 +189,10 @@ mainState.prototype = {
 
   initKeyboard: function() {
     for(var i = 0; i < players.length; i++){
-      players[i].commandListeners.push(game.input.keyboard.addKey(players[i].upCommand));
-      players[i].commandListeners.push(game.input.keyboard.addKey(players[i].downCommand));
-      players[i].commandListeners.push(game.input.keyboard.addKey(players[i].leftCommand));
-      players[i].commandListeners.push(game.input.keyboard.addKey(players[i].rightCommand));
+      players[i].commandListeners.up = game.input.keyboard.addKey(players[i].directionalCommands.up);
+      players[i].commandListeners.down = game.input.keyboard.addKey(players[i].directionalCommands.down);
+      players[i].commandListeners.left = game.input.keyboard.addKey(players[i].directionalCommands.left);
+      players[i].commandListeners.right = game.input.keyboard.addKey(players[i].directionalCommands.right);
     }
 
     for(var i = 0; i < players.length; i++){
@@ -224,11 +216,6 @@ mainState.prototype = {
   },
 
   enableRelevantActions: function() {
-    // console.log("enabledActions: " + players[0].actionListeners.length);
-    // players[0].actionListeners.forEach(function(x) {
-    //   console.log(players[0].actionListeners.indexOf(x) + " = " + x.enabled);
-    // });
-
     var enabledActions = levels[gameProperties.currentLevel].enabledActions;
     for(var i = 0; i < enabledActions.length; i++){
       var index = enabledActions[i];
@@ -274,12 +261,6 @@ mainState.prototype = {
         itemsInPlay[i].kill();
     }
     itemsInPlay = [];
-  },
-
-  isOverlapping(newItem, existingItem) {
-    var boundsNew = newItem.getBounds();
-    var boundsExisting = existingItem.getBounds();
-    return Phaser.Rectangle.intersects(boundsA, boundsB);
   },
 
   initGraphics: function() {
