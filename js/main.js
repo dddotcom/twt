@@ -13,16 +13,16 @@ $(document).ready( function() {
   $("#bgMusic").get(0).play();
 
   $("#pauseSound").click(function() {
-    console.log("pause sound clicked");
     if($("#bgMusic").get(0).paused){
       $("#bgMusic").get(0).play();
+      gameProperties.soundOff = false;
       $("#pauseSound").removeClass("fa-volume-off");
       $("#pauseSound").addClass("fa-volume-up");
     } else {
       $("#bgMusic").get(0).pause();
+      gameProperties.soundOff = true;
       $("#pauseSound").removeClass("fa-volume-up");
       $("#pauseSound").addClass("fa-volume-off");
-
     }
   })
 });

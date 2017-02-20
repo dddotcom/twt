@@ -145,7 +145,9 @@ mainState.prototype = {
   playActionAnimation: function(playerIndex, actionIndex){
     playersGroup.children[playerIndex].animations.play(actions[actionIndex].animationName);
     $("#" + actions[actionIndex].command[playerIndex]).addClass("hover");
-    $('#' + actions[actionIndex].animationName).get(0).play();
+    if(!gameProperties.soundOff){
+        $('#' + actions[actionIndex].animationName).get(0).play();
+    }
   },
 
   moveUpAndDown: function(player){

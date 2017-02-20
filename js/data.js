@@ -1,4 +1,5 @@
 var gameProperties = {
+  soundOff: false,
   screenWidth: 800,
   screenHeight: 600,
   playerSpriteHeight: 200,
