@@ -3,6 +3,19 @@ var gameProperties = {
   screenHeight: 600,
   playerSpriteHeight: 200,
   playerSpriteWidth: 126,
+  playerMovements: {
+    left: {
+      animationName: 'left',
+      animationFrames: [0, 1],
+    },
+    right: {
+      animationName: 'right',
+      animationFrames: [3, 4],
+    },
+    standStill: {
+      animationFrames: 2,
+    },
+  },
   winLoseSpriteHeight:180,
   winLoseSpriteWidth: 230,
   playerSpeed: 300,
@@ -34,13 +47,15 @@ var gameProperties = {
 var players = [
   {
     spriteName: 'player0',
-    spriteURL: 'assets/playerSprites/player3_evenMoreActions1.png',
+    spriteURL: 'assets/playerSprites/player3_evenMoreActions2.png',
     scoreImg: 'assets/playerSprites/player2.png',
-    upCommand: Phaser.Keyboard.W,
-    downCommand: Phaser.Keyboard.S,
-    leftCommand: Phaser.Keyboard.A,
-    rightCommand: Phaser.Keyboard.D,
-    commandListeners: [],
+    directionalCommands: {
+      up: Phaser.Keyboard.W,
+      down: Phaser.Keyboard.S,
+      left: Phaser.Keyboard.A,
+      right: Phaser.Keyboard.D,
+    },
+    commandListeners: {},
     actionListeners: [],
     lastDirection:'',
     score: 0,
@@ -54,11 +69,13 @@ var players = [
     spriteName: 'player1',
     spriteURL: 'assets/playerSprites/player1_evenMoreActions6.png',
     scoreImg: 'assets/playerSprites/player1.png',
-    upCommand: Phaser.Keyboard.I,
-    downCommand: Phaser.Keyboard.K,
-    leftCommand: Phaser.Keyboard.J,
-    rightCommand: Phaser.Keyboard.L,
-    commandListeners: [],
+    directionalCommands: {
+      up: Phaser.Keyboard.I,
+      down: Phaser.Keyboard.K,
+      left: Phaser.Keyboard.J,
+      right: Phaser.Keyboard.L,
+    },
+    commandListeners: {},
     actionListeners: [],
     lastDirection: '',
     score: 0,
@@ -144,7 +161,7 @@ var levels = [
   {
     levelName: '11',
     levelURL: 'assets/backgrounds/bathroom1.png',
-    enabledActions: [0,1,4,2], //all
+    enabledActions: [0,1,4], //all
   },
   {
     levelName: '12',
@@ -202,7 +219,7 @@ var actions = [
     action: "ANSWER",
     command: [Phaser.Keyboard.Q, Phaser.Keyboard.U],
     imageName: 'chalkboard',
-    imageURL: 'assets/items/chalkboard.png',
+    imageURL: 'assets/items/chalkboard1.png',
     animationName: 'answer',
     animationFrames: [14,15,16],
     points: 800,
