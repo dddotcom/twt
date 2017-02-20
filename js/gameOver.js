@@ -22,6 +22,10 @@ gameOver.prototype = {
         this.showWinner();
       },
 
+      update: function(){
+        this.enablePlayerController();
+      },
+
       showWinner: function() {
         for(var i = 1; i < players.length; i++){
           if(players[i].score > players[winnerIndex].score){
@@ -48,5 +52,40 @@ gameOver.prototype = {
         gameProperties.currentBackground = newBackground;
       },
 
+      enablePlayerController: function() {
+        players.forEach(function(player){
+          if(player.commandListeners.left.isDown){
+            this.pushButton(player.directionalCommands.left);
+          } else if(player.commandListeners.right.isDown){
+            this.pushButton(player.directionalCommands.right);
+          } else if(player.commandListeners.down.isDown){
+            this.pushButton(player.directionalCommands.down);
+          } else if(player.commandListeners.up.isDown){
+            this.pushButton(player.directionalCommands.up);
+          } else if(player.actionListeners[0].isDown){
+            this.pushButton(player.actionListeners[0].keyCode);
+          } else if(player.actionListeners[1].isDown){
+            this.pushButton(player.actionListeners[1].keyCode);
+          } else if(player.actionListeners[2].isDown){
+            this.pushButton(player.actionListeners[2].keyCode);
+          } else if(player.actionListeners[3].isDown){
+            this.pushButton(player.actionListeners[3].keyCode);
+          } else if(player.actionListeners[4].isDown){
+            this.pushButton(player.actionListeners[4].keyCode);
+          } else if(player.actionListeners[5].isDown){
+            this.pushButton(player.actionListeners[5].keyCode);
+          } else {
+            this.removeButtonHover(player.spriteName);
+          }
+        }, this);
+      },
 
+      pushButton: function(objectId) {
+        $("#" + objectId).addClass("hover");
+      },
+
+      removeButtonHover: function(playerControllerId) {
+        $("#" + playerControllerId + " .controllerButton").removeClass("hover");
+        $("#" + playerControllerId + " .keyboardButton").removeClass("hover");
+      },
 }

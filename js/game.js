@@ -387,7 +387,7 @@ mainState.prototype = {
 
   gameOver: function() {
     var timeLeft = gameProperties.levelTimer.tick - gameProperties.levelTimer.timer._now;
-    if( (timeLeft === 0) && (gameProperties.currentLevel === levels.length-1 )){
+    if( (timeLeft <= 0) && (gameProperties.currentLevel === levels.length-1 )){
       this.game.state.start('state3');
     }
   },
