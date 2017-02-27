@@ -6,9 +6,12 @@ menu.prototype = {
     //start game text
     game.add.sprite(0,0, gameProperties.titleName);
     this.enterKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-    $( document ).click(function() {
-      $( "#mobileMessage" ).effect( "bounce", {}, 1000 );
-    });
+
+    if(this.isMobile()){
+      $( document ).click(function() {
+        $( "#mobileMessage" ).effect( "bounce", {}, 1000 );
+      });
+    }
   },
 
   update: function() {
@@ -26,10 +29,8 @@ menu.prototype = {
   showMobileMessage: function() {
     if(this.isMobile()){
       $("#mobileMessage").show();
-      $(document).click(true);
     } else {
       $("#mobileMessage").hide();
-      $(document).click(false);
     }
   },
 
